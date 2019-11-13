@@ -6,10 +6,9 @@ import { Resource } from './types';
 
 const pollerWorker = new ApiPollerWorker<Resource>({
   workerUrl: '/workers-dist/main.bundle.js',
-  interval: 10000,
 });
 
-pollerWorker.onMessage(data => console.log('data', data));
+pollerWorker.onMessage(data => console.log('data', data.newItems, 'u', data.updatedItems));
 
 import './styles/style.scss';
 

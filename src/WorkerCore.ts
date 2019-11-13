@@ -1,14 +1,11 @@
 import Poller from './Poller';
 
+import { Records, Msg } from './types';
+
 interface WorkerCoreOptions {
   url: string;
   uniqueKey?: string;
   interval?: number;
-}
-
-interface Records<T> {
-  ids: string[];
-  byId: { [id: string]: T };
 }
 
 const ctx: Worker = self as any;
@@ -23,7 +20,7 @@ function normalize<T extends {}>(data: T[], uniqueKey: string) {
     }
 
     // At this point, we have no idea what `datum` is going to be,
-    // beyond it being some kind of ojbect, so we need to rely on
+    // beyond it being some kind of object, so we need to rely on
     // runtime checks to make sure the unique key actually exists
     // on this object.
     // @ts-ignore
@@ -36,12 +33,12 @@ function normalize<T extends {}>(data: T[], uniqueKey: string) {
   return { ids, byId };
 }
 
-function diff<T extends {}>(before: Records<T>, after: Records<T>) {
+function diff<T extends {}>(before: Records<T>, after: Records<T>, uniqueKey: string): Msg<T> {
   const { ids: beforeIds } = before;
   const { ids: afterIds } = after;
 
   const newIds = afterIds.filter(id => !beforeIds.includes(id));
-  const newItems = newIds.map(id => after.byId[id]);
+  const newItems = normalize<T>(newIds.map(id => after.byId[id]), uniqueKey);
   const removedIds = beforeIds.filter(id => !afterIds.includes(id));
 
   const updatedItems: Records<T> = {
@@ -66,10 +63,7 @@ function diff<T extends {}>(before: Records<T>, after: Records<T>) {
   });
 
   return {
-    newItems: {
-      ids: newIds,
-      byId: newItems,
-    },
+    newItems,
     removedItems: removedIds,
     updatedItems,
   }
@@ -89,7 +83,7 @@ export default class WorkerCore<T> {
 
     poller.start().onData(data => {
       const normalized = normalize<T>(data, uniqueKey);
-      const update = diff<T>(this.records, normalized);
+      const update = diff<T>(this.records, normalized, uniqueKey);
 
       this.records = normalized;
 

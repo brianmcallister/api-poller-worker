@@ -1,8 +1,4 @@
-interface Msg<T> {
-  new: T[];
-  updated: T[];
-  deleted: T[];
-}
+import { Msg } from './types';
 
 interface Options {
   workerUrl: string;
