@@ -1,0 +1,135 @@
+@import '../../styles/base';
+
+.app {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  &__header {
+    @include type-style-manhattan;
+
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    margin: auto;
+    padding: 30px;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  &__header-link {
+    color: map-get($colors, allen);
+    margin-left: 10px;
+    text-decoration: none;
+  }
+
+  &__header-links {
+    a {
+      color: map-get($colors, allen);
+      margin-left: 10px;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    margin: -50px auto 0;
+    max-width: 1200px;
+    padding: 0 50px 50px;
+  }
+
+  &__options {
+    align-items: baseline;
+    display: flex;
+    margin-bottom: 50px;
+
+    label {
+      @include type-style-bronx;
+
+      color: map-get($colors, barrow);
+      user-select: none;
+    }
+  }
+
+  &__option {
+    margin: 0 0 0 50px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    .bp3-switch {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .bp3-control-indicator {
+      margin: 0 !important;
+    }
+
+    .bp3-input-group {
+      margin-top: 3px;
+    }
+
+    .bp3-slider {
+      margin-top: 2px;
+    }
+
+    .bp3-slider-axis {
+      display: none;
+    }
+  }
+
+  &__msg-container {
+    background: #1d1f21;
+    border-radius: 5px;
+    padding: 10px 0;
+    width: 70vw;
+  }
+
+  &__msg {
+    color: map-get($colors, beach);
+    cursor: default;
+    font-family: monospace;
+    padding: 5px 12px;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: lighten(#1d1f21, 2%);
+    }
+  }
+
+  .react-auto-scroll {
+    &__scroll-container {
+      overflow-x: hidden !important;
+    }
+
+    &__option {
+      @include type-style-manhattan;
+
+      color: map-get($colors, barrow);
+      cursor: pointer;
+      display: inline-block;
+      padding: 12px 10px 0;
+    }
+
+    &__option-input {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    &__option-text {
+      cursor: pointer;
+    }
+  }
+}

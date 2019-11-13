@@ -1,0 +1,30 @@
+@import 'variables/colors';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #181818;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+  width: 100%;
+}
+
+.button {
+  appearance: none;
+  background: rgba(#fff, 0.2);
+  border: 0;
+  border-radius: 3px;
+  color: #c9c9c9;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 8px 9px;
+  text-align: center;
+}
