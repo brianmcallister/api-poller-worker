@@ -3,15 +3,14 @@ import ReactDOM from 'react-dom';
 
 import { ApiPollerWorker } from '../../dist';
 import { Resource } from './types';
+import App from './components/App';
+
+import './styles/style.scss';
 
 const pollerWorker = new ApiPollerWorker<Resource>({
   workerUrl: '/workers-dist/main.bundle.js',
 });
 
 pollerWorker.onMessage(data => console.log('data', data.newItems, 'u', data.updatedItems));
-
-import './styles/style.scss';
-
-import App from './components/App';
 
 ReactDOM.render(<App />, document.querySelector('#root'));

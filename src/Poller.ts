@@ -6,10 +6,16 @@ interface ApiPollerOptions {
 
 export default class ApiPoller<T> {
   intervalId: number | undefined;
+
   listeners: Set<(data: T[]) => void>;
+
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   requestPending: boolean = false;
+
   request: RequestInit | undefined;
+
   options: ApiPollerOptions;
+
   interval: number;
 
   constructor(options: ApiPollerOptions) {
@@ -52,6 +58,6 @@ export default class ApiPoller<T> {
         return json;
       })
       // eslint-disable-next-line no-console
-      .catch(err => console.error(err));
+      .catch(error => console.error(error));
   }
 }

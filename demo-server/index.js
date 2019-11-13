@@ -8,8 +8,8 @@ app.use(cors());
 
 let nextId = 1;
 
-const makeItem = (id) => {
-  nextId = nextId + 1;
+const makeItem = () => {
+  nextId += 1;
 
   return {
     id: nextId,
@@ -18,13 +18,14 @@ const makeItem = (id) => {
   }
 }
 
-const items = Array.from(Array(5)).map(makeItem);
+const items = [...new Array(5)].map(makeItem);
 
 app.get('/', (req, res) => {
   res.status(200).json(items);
 });
 
 app.listen(3000, () => {
+  // eslint-disable-next-line no-console
   console.log('------ listening');
 
   setInterval(() => {

@@ -6,6 +6,7 @@ interface Options {
 
 export default class ApiPollerWorker<T> {
   worker: Worker;
+
   listeners: Set<(data: Msg<T>) => void>;
 
   constructor(options: Options) {
@@ -13,23 +14,14 @@ export default class ApiPollerWorker<T> {
     this.worker = new Worker(workerUrl);
     this.listeners = new Set();
 
-    this.worker.onmessage = (event) => {
+    this.worker.addEventListener('message', (event) => {
       const { data } = event;
 
       this.listeners.forEach(listener => listener(data));
-    }
-
-    this.worker.postMessage({
-      type: 'init',
-      message: {
-        ...options,
-      }
-    })
+    });
   }
 
   onMessage = (callback: (data: Msg<T>) => void) => {
     this.listeners.add(callback);
   }
-
-  send = (message: any) => this.worker.postMessage({ type: 'api', message });
 }

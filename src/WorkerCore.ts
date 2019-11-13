@@ -8,6 +8,7 @@ interface WorkerCoreOptions {
   interval?: number;
 }
 
+// eslint-disable-next-line no-restricted-globals, @typescript-eslint/no-explicit-any
 const ctx: Worker = self as any;
 
 function normalize<T extends {}>(data: T[], uniqueKey: string) {
@@ -15,7 +16,7 @@ function normalize<T extends {}>(data: T[], uniqueKey: string) {
   const byId: { [id: string]: T } = {};
 
   data.forEach((datum: T) => {
-    if (!datum.hasOwnProperty(uniqueKey)) {
+    if (!Object.prototype.hasOwnProperty.call(datum, uniqueKey)) {
       throw new Error(`Resource does not have key named: "${uniqueKey}"`);
     }
 
