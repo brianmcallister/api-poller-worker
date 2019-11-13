@@ -3,6 +3,7 @@ import Poller from './Poller';
 interface WorkerCoreOptions {
   url: string;
   uniqueKey?: string;
+  interval?: number;
 }
 
 interface Records<T> {
@@ -41,7 +42,28 @@ function diff<T extends {}>(before: Records<T>, after: Records<T>) {
 
   const newIds = afterIds.filter(id => !beforeIds.includes(id));
   const newItems = newIds.map(id => after.byId[id]);
-  const removedIds = afterIds.filter(id => !beforeIds.includes(id));
+  const removedIds = beforeIds.filter(id => !afterIds.includes(id));
+
+  const updatedItems: Records<T> = {
+    ids: [],
+    byId: {},
+  };
+
+  // Compare all before and after objects to see which ones have updated.
+  after.ids.forEach(afterId => {
+    const beforeObj = before.byId[afterId];
+    const afterObj = after.byId[afterId];
+
+    if (!beforeObj) {
+      return;
+    }
+
+    if (JSON.stringify(beforeObj) !== JSON.stringify(afterObj)) {
+
+      updatedItems.ids.push(afterId);
+      updatedItems.byId[afterId] = afterObj;
+    }
+  });
 
   return {
     newItems: {
@@ -49,6 +71,7 @@ function diff<T extends {}>(before: Records<T>, after: Records<T>) {
       byId: newItems,
     },
     removedItems: removedIds,
+    updatedItems,
   }
 }
 
@@ -56,8 +79,8 @@ export default class WorkerCore<T> {
   records: Records<T>;
 
   constructor(options: WorkerCoreOptions) {
-    const { url, uniqueKey = 'id' } = options;
-    const poller = new Poller<T>({ url });
+    const { url, uniqueKey = 'id', interval = 2000 } = options;
+    const poller = new Poller<T>({ url, interval });
 
     this.records = {
       ids: [],
@@ -70,7 +93,6 @@ export default class WorkerCore<T> {
 
       this.records = normalized;
 
-      console.log('---- normalized', update);
       ctx.postMessage(update);
     });
   }

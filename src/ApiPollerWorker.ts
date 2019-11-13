@@ -5,9 +5,7 @@ interface Msg<T> {
 }
 
 interface Options {
-  apiUrl: string;
   workerUrl: string;
-  interval?: number;
 }
 
 export default class ApiPollerWorker<T> {
@@ -15,7 +13,7 @@ export default class ApiPollerWorker<T> {
   listeners: Set<(data: Msg<T>) => void>;
 
   constructor(options: Options) {
-    const { workerUrl, apiUrl, interval = 2000 } = options;
+    const { workerUrl } = options;
     this.worker = new Worker(workerUrl);
     this.listeners = new Set();
 

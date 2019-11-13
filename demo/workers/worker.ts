@@ -2,5 +2,6 @@ import { WorkerCore } from '../../dist';
 import { Resource } from '../src/types';
 
 const worker = new WorkerCore<Resource>({
-  url: 'https://jsonplaceholder.typicode.com/todos',
+  url: 'http://localhost:3000',
+  interval: 5000,
 });

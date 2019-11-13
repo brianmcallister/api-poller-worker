@@ -5,8 +5,8 @@ import { ApiPollerWorker } from '../../dist';
 import { Resource } from './types';
 
 const pollerWorker = new ApiPollerWorker<Resource>({
-  apiUrl: 'https://jsonplaceholder.typicode.com/todos',
-  workerUrl: '/workers-dist/js/main.bundle.js',
+  workerUrl: '/workers-dist/main.bundle.js',
+  interval: 10000,
 });
 
 pollerWorker.onMessage(data => console.log('data', data));
