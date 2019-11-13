@@ -4,32 +4,44 @@ interface ApiPollerOptions {
   fetchOptions?: RequestInit;
 }
 
+/**
+ * ApiPoller class
+ * @class
+ *
+ * Acceps a generic, `T`, which represents the type
+ * of data returned by the polled endpoint.
+ */
 export default class ApiPoller<T> {
+  // Main polling interval ID.
   intervalId: number | undefined;
 
+  // Set of listeners to be called when the API responds.
   listeners: Set<(data: T[]) => void>;
 
+  // Track if there's a pending request. No need to
+  // queue up requests here.
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   requestPending: boolean = false;
 
-  request: RequestInit | undefined;
-
+  // Class options.
   options: ApiPollerOptions;
 
+  // How often should the API endpoint be polled?
   interval: number;
 
+  /**
+   * Constructor.
+   * @constructor
+   */
   constructor(options: ApiPollerOptions) {
     this.options = options;
     this.interval = options.interval || 2000;
     this.listeners = new Set();
   }
 
-  onData = (callback: (data: T[]) => void) => {
-    this.listeners.add(callback);
-
-    return this;
-  }
-
+  /**
+   * Start polling the API endpoint.
+   */
   start = () => {
     this.makeRequest();
     this.intervalId = setInterval(this.makeRequest, this.interval);
@@ -37,6 +49,9 @@ export default class ApiPoller<T> {
     return this;
   }
 
+  /**
+   * Stop polling.
+   */
   stop = () => {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -45,19 +60,34 @@ export default class ApiPoller<T> {
     return this;
   }
 
-  private makeRequest = () => {
+  /**
+   * Subscribe to updates from the API endpoint.
+   */
+  subscribe = (callback: (data: T[]) => void) => {
+    this.listeners.add(callback);
+
+    return this;
+  }
+
+  /**
+   * Make the API request.
+   * @private
+   */
+  private makeRequest = async () => {
     if (this.requestPending) {
       return;
     }
 
-    fetch(this.options.url, this.options.fetchOptions)
-      .then(res => res.json())
-      .then((json) => {
-        this.listeners.forEach(listener => listener(json));
+    const { url, fetchOptions } = this.options;
 
-        return json;
-      })
+    try {
+      const req = await fetch(url, fetchOptions);
+      const json = await req.json();
+
+      this.listeners.forEach(listener => listener(json));
+    } catch (error) {
       // eslint-disable-next-line no-console
-      .catch(error => console.error(error));
+      console.error(error)
+    }
   }
 }
