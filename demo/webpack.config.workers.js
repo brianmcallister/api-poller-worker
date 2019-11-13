@@ -1,6 +1,9 @@
-const path = require('path');
+require('dotenv').config();
 
-const { NODE_ENV: env = 'development' } = process.env;
+const path = require('path');
+const webpack = require('webpack');
+
+const { POLLING_API_URL, NODE_ENV: env = 'development' } = process.env;
 
 module.exports = {
   mode: env,
@@ -23,4 +26,12 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(env),
+        POLLING_API_URL: JSON.stringify(POLLING_API_URL),
+      },
+    }),
+  ],
 };

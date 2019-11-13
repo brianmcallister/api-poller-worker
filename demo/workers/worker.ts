@@ -3,6 +3,6 @@ import { Resource } from '../src/types';
 
 // eslint-disable-next-line no-new
 new WorkerCore<Resource>({
-  url: 'http://localhost:3000',
+  url: process.env.POLLING_API_URL,
   interval: 5000,
 });
