@@ -1,5 +1,5 @@
 {
-  "name": "react-auto-scroll-demo",
+  "name": "demo",
   "scripts": {
     "build": "webpack --mode=production",
     "build:workers": "webpack --config=webpack.config.workers.js",
