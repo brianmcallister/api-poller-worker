@@ -11,8 +11,8 @@ module.exports = {
     './workers/worker.ts'
   ],
   output: {
-    path: path.resolve(__dirname, 'workers-dist'),
-    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist', 'workers'),
+    filename: '[name].worker.bundle.js',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],

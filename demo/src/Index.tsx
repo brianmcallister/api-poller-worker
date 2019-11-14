@@ -8,7 +8,7 @@ import App from './components/App';
 import './styles/style.scss';
 
 const pollerWorker = new ApiPollerWorker<Resource>({
-  workerUrl: '/workers-dist/main.bundle.js',
+  workerUrl: '/main.worker.bundle.js',
 });
 
 pollerWorker.onMessage(data => console.log('data', data.newItems, 'u', data.updatedItems));
