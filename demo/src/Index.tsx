@@ -1,7 +1,7 @@
+import { ApiPollerWorker } from '@brianmcallister/api-poller-worker';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { ApiPollerWorker } from '../../dist';
 import { Resource } from './types';
 import App from './components/App';
 

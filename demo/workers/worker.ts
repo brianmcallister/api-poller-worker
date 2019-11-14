@@ -1,4 +1,5 @@
-import { WorkerCore } from '../../dist';
+import { WorkerCore } from '@brianmcallister/api-poller-worker';
+
 import { Resource } from '../src/types';
 
 // eslint-disable-next-line no-new
