@@ -1,6 +1,8 @@
 @import '../../styles/base';
 
 .app {
+  $this: &;
+
   align-items: stretch;
   display: flex;
   flex-direction: column;
@@ -12,11 +14,12 @@
     align-items: center;
     display: flex;
     justify-content: flex-end;
-    margin: auto;
+    margin: 0 auto;
     padding: 30px;
     position: relative;
     width: 100%;
     z-index: 1;
+    flex: 0 0;
   }
 
   &__header-link {
@@ -38,98 +41,114 @@
   }
 
   &__content {
-    align-items: center;
     display: flex;
     flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    margin: -50px auto 0;
-    max-width: 1200px;
-    padding: 0 50px 50px;
+    align-items: stretch;
   }
 
-  &__options {
-    align-items: baseline;
-    display: flex;
-    margin-bottom: 50px;
+  &__section-title {
+    @include type-style-queens;
 
-    label {
-      @include type-style-bronx;
-
-      color: map-get($colors, barrow);
-      user-select: none;
-    }
-  }
-
-  &__option {
-    margin: 0 0 0 50px;
-
-    &:first-child {
-      margin-left: 0;
-    }
-
-    .bp3-switch {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    .bp3-control-indicator {
-      margin: 0 !important;
-    }
-
-    .bp3-input-group {
-      margin-top: 3px;
-    }
-
-    .bp3-slider {
-      margin-top: 2px;
-    }
-
-    .bp3-slider-axis {
-      display: none;
-    }
-  }
-
-  &__msg-container {
-    background: #1d1f21;
-    border-radius: 5px;
-    padding: 10px 0;
-    width: 70vw;
-  }
-
-  &__msg {
     color: map-get($colors, beach);
-    cursor: default;
-    font-family: monospace;
-    padding: 5px 12px;
-    white-space: nowrap;
+    padding: 5px;
+    margin: 0;
+  }
 
-    &:hover {
-      background-color: lighten(#1d1f21, 2%);
+  &__message {
+    flex: 1;
+  }
+
+  &__message-type {
+    margin-top: 30px;
+
+    &--new {
+      #{$this}__message-title span {
+        color: #00ff62;
+      }
+    }
+
+    &--updated {
+      #{$this}__message-title span {
+        color: #ffbb00;
+      }
+    }
+
+    &--removed {
+      #{$this}__message-title span {
+        color: #ff3c00;
+      }
     }
   }
 
-  .react-auto-scroll {
-    &__scroll-container {
-      overflow-x: hidden !important;
+  &__message-title {
+    @include type-style-brooklyn;
+
+    display: flex;
+    color: map-get($colors, barrow);
+    align-items: baseline;
+    padding: 5px;
+
+    span {
+      margin-left: 10px;
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+  }
+
+  &__message-items {
+    font-family: Inconsolata, monospace;
+    font-size: 15px;
+    margin-top: 15px;
+    border-top: 1px solid rgba(#fff, 0.05);
+  }
+
+  &__message-item {
+    padding: 5px 0 6px 0;
+
+    &:nth-child(even) {
+      background-color: rgba(#fff, 0.02);
     }
 
-    &__option {
-      @include type-style-manhattan;
+    &--empty {
+      #{$this} {
+        &__message-field {
+          color: #333333;
+        }
+      }
+    }
+  }
 
-      color: map-get($colors, barrow);
-      cursor: pointer;
-      display: inline-block;
-      padding: 12px 10px 0;
+  &__message-field {
+    margin: 5px;
+    color: #7a7165;
+  }
+
+  &__state {
+    flex: 1;
+
+    background-color: #2a2a2a;
+
+    code {
+      font-family: Inconsolata, monospace;
+      font-size: 15px;
+      line-height: 18px;
+      color: #696969;
     }
 
-    &__option-input {
-      cursor: pointer;
-      margin-right: 10px;
+    .hljs-attr {
+      color: #b3b3b3;
     }
 
-    &__option-text {
-      cursor: pointer;
+    .hljs-number {
+      color: #00ff62;
     }
+
+    .hljs-string {
+      color: #00ccff;
+    }
+  }
+
+  &__rendered {
+    flex: 1;
   }
 }

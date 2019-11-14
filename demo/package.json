@@ -24,6 +24,8 @@
     "react": "16.8.1",
     "react-dom": "16.8.1",
     "react-flip-move": "3.0.4",
+    "react-highlight.js": "1.0.7",
+    "react-odometer": "github:dearfrankg/react-odometer",
     "sass": "1.23.3",
     "sass-loader": "8.0.0",
     "style-loader": "0.23.1",
