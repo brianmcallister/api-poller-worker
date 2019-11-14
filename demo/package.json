@@ -3,7 +3,7 @@
   "scripts": {
     "build": "webpack --mode=production",
     "build:workers": "webpack --config=webpack.config.workers.js",
-    "build:all": "npm run build && npm run build:workers",
+    "build:all": "npm run build",
     "start": "webpack-dev-server --hot"
   },
   "dependencies": {
