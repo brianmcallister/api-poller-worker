@@ -1,8 +1,8 @@
-import { ApiPollerWorker, Msg, createEmptyMsg } from '../../../../dist';
+import { ApiPollerWorker, Msg, createEmptyMsg } from '@brianmcallister/api-poller-worker';
 import classnames from 'classnames';
+import FlipMove from 'react-flip-move';
 import Highlight from 'react-highlight.js';
 import React from 'react';
-import FlipMove from 'react-flip-move';
 
 import { Resource } from '../../types';
 import LogoIcon from '../LogoIcon';
