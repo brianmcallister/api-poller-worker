@@ -56,6 +56,16 @@
 
   &__message {
     flex: 1;
+
+    #{$this}__section-title {
+      display: flex;
+      align-items: center;
+
+      .spinner {
+        margin-right: 15px;
+        margin-top: 2px;
+      }
+    }
   }
 
   &__message-type {

@@ -4,6 +4,7 @@ import Highlight from 'react-highlight.js';
 import React from 'react';
 import FlipMove from 'react-flip-move';
 
+import Spinner from '../Spinner';
 import { Resource } from '../../types';
 import LogoIcon from '../LogoIcon';
 
@@ -94,7 +95,11 @@ export default () => {
 
       <div className={`${baseClass}__content`}>
         <div className={`${baseClass}__message`}>
-          <p className={`${baseClass}__section-title`}>Worker messages</p>
+          <p className={`${baseClass}__section-title`}>
+            <Spinner />
+
+            Worker messages
+          </p>
 
           <div className={`${baseClass}__message-type ${baseClass}__message-type--new`}>
             <p className={`${baseClass}__message-title`}>

@@ -1,0 +1,71 @@
+@import '../../styles/base';
+
+.spinner {
+  $size: 15px;
+  $color: map-get($colors, bayard);
+  $border: 2px solid rgba(map-get($colors, astor), 0.5);
+  $duration: 5s;
+
+  background-color: map-get($colors, bayard);
+  height: $size;
+  // margin: 5px;
+  position: relative;
+  width: $size;
+  will-change: transform, opacity;
+
+  &__segment {
+    background: $color;
+    border: $border;
+    height: 100%;
+    position: absolute;
+    transform-origin: 100% 50%;
+    width: 50%;
+  }
+
+  &__segment--lead {
+    animation: spinner-rotate $duration linear infinite;
+    border-radius: 100% 0 0 100% / 50% 0 0 50%;
+    border-right: none;
+    z-index: 200;
+  }
+
+  &__segment--follow {
+    animation: spinner-flash $duration steps(1, end) infinite reverse;
+    border-left: none;
+    border-radius: 0 100% 100% 0 / 0 50% 50% 0;
+    left: 50%;
+    opacity: 0;
+    z-index: 100;
+  }
+
+  &__mask {
+    animation: spinner-flash $duration steps(1, end) infinite;
+    background: inherit;
+    height: 100%;
+    opacity: 1;
+    position: absolute;
+    width: 50%;
+    z-index: 300;
+  }
+}
+
+@keyframes spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-flash {
+  0% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
