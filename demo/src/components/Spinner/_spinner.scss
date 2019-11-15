@@ -1,14 +1,13 @@
 @import '../../styles/base';
 
 .spinner {
-  $size: 15px;
+  $size: 25px;
   $color: map-get($colors, bayard);
-  $border: 2px solid rgba(map-get($colors, astor), 0.5);
+  $border: 2px solid rgba(map-get($colors, astor), 0.8);
   $duration: 5s;
 
   background-color: map-get($colors, bayard);
   height: $size;
-  // margin: 5px;
   position: relative;
   width: $size;
   will-change: transform, opacity;

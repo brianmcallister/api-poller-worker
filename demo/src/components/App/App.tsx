@@ -23,6 +23,9 @@ interface Action {
 const baseClass = 'app';
 const createInitialState = () => ({ ids: [], byId: {} });
 const initialState = createInitialState();
+const formatMoney = (val: string) => (
+  new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(val)
+);
 
 function paddedArray<T>(arr: T[], min = 3) {
   if (arr.length >= min) {
@@ -118,7 +121,7 @@ export default () => {
                   )}
 
                   {!id && (
-                    <span className={`${baseClass}__message-field`}>—</span>
+                    <span className={`${baseClass}__message-field`}>∅</span>
                   )}
                 </div>
               ))}
@@ -142,7 +145,7 @@ export default () => {
                   )}
 
                   {!id && (
-                    <span className={`${baseClass}__message-field`}>—</span>
+                    <span className={`${baseClass}__message-field`}>∅</span>
                   )}
                 </div>
               ))}
@@ -162,7 +165,7 @@ export default () => {
                   )}
 
                   {!id && (
-                    <span className={`${baseClass}__message-field`}>—</span>
+                    <span className={`${baseClass}__message-field`}><strong>∅</strong></span>
                   )}
                 </div>
               ))}
@@ -171,18 +174,42 @@ export default () => {
         </div>
 
         <div className={`${baseClass}__state`}>
-          <p className={`${baseClass}__section-title`}>Current state</p>
+          <p className={`${baseClass}__section-title`}>
+            <div className={`${baseClass}__badge`}>
+              &#x21BB;
+            </div>
+
+            Current state
+          </p>
 
           <Highlight>
-            {JSON.stringify(state, null, 2)}
+            {JSON.stringify(state, null, 4)}
           </Highlight>
         </div>
 
         <div className={`${baseClass}__rendered`}>
-          <p className={`${baseClass}__section-title`}>Items</p>
+          <p className={`${baseClass}__section-title`}>
+            <div className={`${baseClass}__badge`}>
+              &#x21BB;
+            </div>
 
-          <FlipMove staggerDurationBy={50}>
-            {state.ids.map(id => <div key={state.byId[id].id}>{state.byId[id].name}</div>)}
+            Items
+          </p>
+
+          <FlipMove
+            className={`${baseClass}__rendered-items`}
+            staggerDurationBy={50}
+          >
+            {state.ids.map(id => (
+              <div
+                className={`${baseClass}__rendered-item`}
+                key={state.byId[id].id}
+              >
+                <span>{`⋮ ${state.byId[id].id}`}</span>
+                <span>{state.byId[id].name}</span>
+                <span>{formatMoney(state.byId[id].price)}</span>
+              </div>
+            ))}
           </FlipMove>
         </div>
       </div>
