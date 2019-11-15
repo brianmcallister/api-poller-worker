@@ -13,7 +13,7 @@ interface ApiPollerOptions {
  */
 export default class ApiPoller<T> {
   // Main polling interval ID.
-  intervalId: number | undefined;
+  intervalId: NodeJS.Timeout | undefined;
 
   // Set of listeners to be called when the API responds.
   listeners: Set<(data: T[]) => void>;
@@ -81,10 +81,14 @@ export default class ApiPoller<T> {
     const { url, fetchOptions } = this.options;
 
     try {
+      this.requestPending = true;
+
       const req = await fetch(url, fetchOptions);
       const json = await req.json();
 
       this.listeners.forEach(listener => listener(json));
+
+      this.requestPending = false;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
