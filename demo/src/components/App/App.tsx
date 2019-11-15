@@ -69,9 +69,10 @@ export default () => {
 
   const [state, dispatch] = React.useReducer(reducer, initialState, createInitialState);
   const [items, setItems] = React.useState<Msg<Resource>>(createEmptyMsg());
+
   React.useEffect(() => {
     pollerWorker = new ApiPollerWorker<Resource>({
-      workerUrl: '/dist/workers/main.worker.bundle.js',
+      workerUrl: '/workers/main.worker.bundle.js',
     });
 
     pollerWorker.onMessage(data => {
@@ -79,6 +80,7 @@ export default () => {
       dispatch({ type: 'update', payload: data });
     });
   }, []);
+
   return (
     <div className={baseClass}>
       <header className={`${baseClass}__header`}>
@@ -109,7 +111,7 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.newItems.ids).map(id => (
-                <div className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
+                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
                   {id && (
                     <>
                       <span className={`${baseClass}__message-field`}>{items.newItems.byId[id].id}</span>
@@ -133,7 +135,7 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.updatedItems.ids).map(id => (
-                <div className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
+                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
                   {id && (
                     <>
                       <span className={`${baseClass}__message-field`}>{items.updatedItems.byId[id].id}</span>
@@ -157,7 +159,7 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.removedItems).map(id => (
-                <div className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
+                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
                   {id && (
                     <span className={`${baseClass}__message-field`}>{id}</span>
                   )}
@@ -180,7 +182,7 @@ export default () => {
             Current state
           </p>
 
-          <Highlight>
+          <Highlight language="json">
             {JSON.stringify(state, null, 4)}
           </Highlight>
         </div>

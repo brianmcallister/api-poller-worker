@@ -28,6 +28,9 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist'),
+  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
