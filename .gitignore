@@ -3,3 +3,4 @@ dist
 workers-dist
 .eslintcache
 .env
+coverage

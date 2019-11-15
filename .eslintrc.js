@@ -23,6 +23,7 @@ module.exports = {
     jest: true,
   },
   rules: {
+    'semi': ['error', 'always'],
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/filename-case': 'off',
     '@typescript-eslint/no-var-requires': 'off',

@@ -3,7 +3,7 @@ import { Msg } from '../types';
 /**
  * Create an empty `Msg`.
  */
-export default function createEmptyMsg<T extends {}>(): Msg<T> {
+function createEmptyMsg<T extends {}>(): Msg<T> {
   return {
     newItems: {
       ids: [],
@@ -16,3 +16,5 @@ export default function createEmptyMsg<T extends {}>(): Msg<T> {
     removedItems: [],
   };
 }
+
+export default createEmptyMsg;

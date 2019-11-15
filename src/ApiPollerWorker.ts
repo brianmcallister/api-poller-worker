@@ -10,10 +10,10 @@ interface Options {
  */
 export default class ApiPollerWorker<T> {
   // Worker instance.
-  worker: Worker;
+  private worker: Worker;
 
   // Set of message event listeners.
-  listeners: Set<(data: Msg<T>) => void>;
+  private listeners: Set<(data: Msg<T>) => void>;
 
   /**
    * Constructor.
