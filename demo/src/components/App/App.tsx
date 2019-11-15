@@ -4,9 +4,10 @@ import Highlight from 'react-highlight.js';
 import React from 'react';
 import FlipMove from 'react-flip-move';
 
-import Spinner from '../Spinner';
 import { Resource } from '../../types';
 import LogoIcon from '../LogoIcon';
+import RenderedItem from '../RenderedItem';
+import Spinner from '../Spinner';
 
 import './_app.scss';
 
@@ -23,9 +24,6 @@ interface Action {
 const baseClass = 'app';
 const createInitialState = () => ({ ids: [], byId: {} });
 const initialState = createInitialState();
-const formatMoney = (val: string) => (
-  new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(val)
-);
 
 function paddedArray<T>(arr: T[], min = 3) {
   if (arr.length >= min) {
@@ -175,9 +173,9 @@ export default () => {
 
         <div className={`${baseClass}__state`}>
           <p className={`${baseClass}__section-title`}>
-            <div className={`${baseClass}__badge`}>
+            <span className={`${baseClass}__badge`}>
               &#x21BB;
-            </div>
+            </span>
 
             Current state
           </p>
@@ -189,9 +187,9 @@ export default () => {
 
         <div className={`${baseClass}__rendered`}>
           <p className={`${baseClass}__section-title`}>
-            <div className={`${baseClass}__badge`}>
+            <span className={`${baseClass}__badge`}>
               &#x21BB;
-            </div>
+            </span>
 
             Items
           </p>
@@ -201,14 +199,12 @@ export default () => {
             staggerDurationBy={50}
           >
             {state.ids.map(id => (
-              <div
-                className={`${baseClass}__rendered-item`}
+              <RenderedItem
                 key={state.byId[id].id}
-              >
-                <span>{`⋮ ${state.byId[id].id}`}</span>
-                <span>{state.byId[id].name}</span>
-                <span>{formatMoney(state.byId[id].price)}</span>
-              </div>
+                id={state.byId[id].id}
+                name={state.byId[id].name}
+                price={state.byId[id].price}
+              />
             ))}
           </FlipMove>
         </div>

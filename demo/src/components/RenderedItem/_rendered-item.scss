@@ -1,0 +1,43 @@
+@import '../../styles/base';
+
+.rendered-item {
+  @include type-style-bronx;
+
+  background-color: #131313;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 3px 0 rgba(#000, 0.2);
+  color: map-get($colors, barrow);
+  display: flex;
+  margin: 10px 0;
+  padding: 15px;
+  transition: background-color .3s ease-in-out;
+
+  // &[style]:not([style=""]):not(&--flash):not(&--new) {
+  //       background-color: Red;
+  //   }
+
+  span {
+    margin-left: 15px;
+
+    &:first-child {
+      margin-left: 0;
+      font-size: 0.8em;
+      font-weight: 700;
+    }
+
+    &:last-child {
+      font-size: 0.8em;
+      font-weight: 700;
+    }
+  }
+
+  &--new {
+    background-color: rgba(lawngreen, 0.493);
+    transition: none;
+  }
+
+  &--flash {
+    background-color: rgba(255, 255, 0, 0.493);
+    transition: none;
+  }
+}
