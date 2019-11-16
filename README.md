@@ -10,11 +10,14 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [API](#api)
-  - [`ApiPollerWorker`](#apipollerworker)
-  - [`WorkerCore`](#workercore)
-  - [`createEmptyMsg`](#createemptymsg)
-  - [`Records<T>`](#recordst)
-  - [`Msg<T>`](#msgt)
+  - Classes
+    - [`ApiPollerWorker`](#apipollerworker)
+    - [`WorkerCore`](#workercore)
+  - Utils
+    - [`createEmptyMsg`](#createemptymsg)
+  - Types
+    - [`Records<T>`](#recordst)
+    - [`Msg<T>`](#msgt)
 
 ## Demo
 
