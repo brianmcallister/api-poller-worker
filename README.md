@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker.svg)](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker)
 
-`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with WebWorkers.
+`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with web workers.
 
 ## Table of contents
 
@@ -64,7 +64,7 @@ your app and your worker. The constructor accepts the following:
 
 ```ts
 interface Options {
-  // URL of the WebWorker to be created.
+  // URL of the Worker to be created.
   workerUrl: string;
 }
 ```
@@ -92,7 +92,7 @@ pollerWorker.onMessage(data => {
 import { WorkerCore } from '@brianmcallister/api-poller-worker';
 ```
 
-The `WorkerCore` class is the what you need to create an instance of in your WebWorker. The constructor accepts the following options:
+The `WorkerCore` class is the what you need to create an instance of in your Worker. The constructor accepts the following options:
 
 ```ts
 interface WorkerCoreOptions {
@@ -106,6 +106,18 @@ interface WorkerCoreOptions {
   // Defaults to 2000.
   interval?: number;
 }
+```
+
+Here's an example of the simplist possible Worker file (with type safety).
+
+> `worker.ts`
+
+```ts
+import { WorkerCore } from '@brianmcallister/api-poller-worker';
+
+import { Resource } from '../src/types';
+
+new WorkerCore<Resource>({ url: '<some endpoint>' });
 ```
 
 [⇧ back to top](#table-of-contents)
