@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker.svg)](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker)
 
-`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections, using polling with `WebWorkers`.
+`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with WebWorkers.
 
 ## Table of contents
 
@@ -13,8 +13,8 @@
   - [`ApiPollerWorker`](#apipollerworker)
   - [`WorkerCore`](#workercore)
   - [`createEmptyMsg`](#createemptymsg)
-  - [`Records<T>`]
-  - [`Msg<T>`]
+  - [`Records<T>`](#recordst)
+  - [`Msg<T>`](#msgt)
 
 ## Demo
 
@@ -34,8 +34,8 @@ npm install @brianmcallister/api-poller-worker
 
 There are two distinct steps to getting this working in your application:
 
-1. Create an `ApiPollerWorker` instance in your application, and subscribe to updates.
-2. Create a web worker, which will create a `WorkerCore` instance inside of it.
+1. Create an [`ApiPollerWorker`](#apipollerworker) instance in your application, and subscribe to updates.
+2. Create a web worker, and create a [`WorkerCore`](#workercore) instance inside of it.
 
 What this library does _not_ help with is creating the worker files themselves. You'll have to set this up in your application's build pipeline, but there are many resources available online to guide you. You can also check out the demo application source to see how I like to set it up.
 
@@ -43,7 +43,9 @@ What this library does _not_ help with is creating the worker files themselves. 
 - [`worker-loader`, a webpack plugin](https://github.com/webpack-contrib/worker-loader)
 - [Demo application source](https://github.com/brianmcallister/api-poller-worker/tree/master/demo)
 
-In short, you need to tell your `ApiPollerWorker` where your worker is, and then in your worker, you need to tell `WorkerCore` where the API endpoint you'd like to poll is.
+In short, you need to tell your [`ApiPollerWorker`](#apipollerworker) where your worker is, and then in your worker, you need to tell [`WorkerCore`](#workercore) where the API endpoint you'd like to poll is.
+
+The reason for structuring the code this way is so that you can do other operations on the data from your polled API endpoint _in your worker_, before passing the data back to your application.
 
 [⇧ back to top](#table-of-contents)
 
@@ -69,10 +71,10 @@ interface Options {
 
 ##### `ApiPollerWorker#onMessage`
 
-Subscribe to updates from the `ApiPollerWorker` instance.
+Subscribe to updates from the `ApiPollerWorker` instance. The response is a [`Msg<T>`](#msgt), which is structured so that your application will know exactly which resources in your polled endpoint are new, updated, or removed.
 
 ```ts
-pollerWorker = new ApiPollerWorker<Resource>({
+const pollerWorker = new ApiPollerWorker<Resource>({
   workerUrl: '/my-worker-file.js',
 });
 
@@ -116,8 +118,10 @@ Create the [`Msg`](#msg) structure, but empty. Useful for building default state
 
 ```ts
 import { createEmptyMsg } from '@brianmcallister/api-poller-worker';
+```
 
-function createEmptyMsg<T extends {}>(): Msg<T>
+```ts
+function createEmptyMsg<T>(): Msg<T>
 ```
 
 [⇧ back to top](#table-of-contents)
@@ -143,7 +147,7 @@ interface Records<T> {
 
 #### `Msg<T>`
 
-Represents the contents of the message emitted by the `WorkerCore`.
+Represents the contents of the message emitted by the [`WorkerCore`](#workercore).
 
 ```ts
 import { Msg } from '@brianmcallister/api-poller-worker';
