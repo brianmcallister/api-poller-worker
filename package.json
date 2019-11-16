@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ./src ./demo",
-    "prepare": "tsc",
+    "prepare": "tsc && rimraf dist/*/__tests__",
     "stylelint": "stylelint demo/**/*.scss",
     "test": "jest --coverage",
     "types": "tsc --noEmit"
