@@ -22,9 +22,8 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
    * Format a money value.
    * @static
    */
-  static formatMoney = (val: number) => (
-    new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(val)
-  )
+  static formatMoney = (val: number) =>
+    new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(val);
 
   /**
    * Constructor.
@@ -50,7 +49,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
         }, 500);
       });
     }, 0);
-  }
+  };
 
   /**
    * Component did update.
@@ -67,7 +66,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
         });
       }, 850);
     }
-  }
+  };
 
   /**
    * Base CSS class.
@@ -93,5 +92,5 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
         <span>{RenderedItem.formatMoney(price)}</span>
       </div>
     );
-  }
+  };
 }

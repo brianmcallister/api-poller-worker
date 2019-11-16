@@ -1,6 +1,8 @@
 # @brianmcallister/api-poller-worker
 
-[![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker.svg)](https://badge.fury.io/js/%40brianmcallister%2Fapi-poller-worker)
+[![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://img.shields.io/npm/v/@brianmcallister/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/@brianmcallister/api-poller-worker)
+
+> Efficient polling with WebWorkers. Make existing APIs feel real time
 
 `api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with web workers.
 
@@ -21,9 +23,18 @@
 
 ## Demo
 
-Check out the hosted demo right here: [https://api-poller-worker.netlify.com/](https://api-poller-worker.netlify.com/)
+Hosted demo: [https://api-poller-worker.netlify.com/](https://api-poller-worker.netlify.com/)
 
-[⇧ back to top](#table-of-contents)
+You can also run the demo locally. To get started:
+
+```sh
+git clone git@github.com:brianmcallister/api-poller-worker.git
+cd api-poller-worker/demo
+npm i
+npm start
+```
+
+###### [⇡ Top](#table-of-contents)
 
 ## Installation
 
@@ -31,7 +42,7 @@ Check out the hosted demo right here: [https://api-poller-worker.netlify.com/](h
 npm install @brianmcallister/api-poller-worker
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 ## Usage
 
@@ -50,7 +61,7 @@ In short, you need to tell your [`ApiPollerWorker`](#apipollerworker) where your
 
 The reason for structuring the code this way is so that you can do other operations on the data from your polled API endpoint _in your worker_, before passing the data back to your application.
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 ## API
 
@@ -87,7 +98,7 @@ pollerWorker.onMessage(data => {
 });
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 #### `WorkerCore`
 
@@ -123,13 +134,13 @@ import { Resource } from '../src/types';
 new WorkerCore<Resource>({ url: '<some endpoint>' });
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 ### Utils
 
 #### `createEmptyMsg`
 
-Create the [`Msg`](#msg) structure, but empty. Useful for building default state for a slice of Redux state.
+Create the [`Msg<T>`](#msgt) structure, but empty. Useful for building default state for a slice of Redux state.
 
 ```ts
 import { createEmptyMsg } from '@brianmcallister/api-poller-worker';
@@ -139,7 +150,7 @@ import { createEmptyMsg } from '@brianmcallister/api-poller-worker';
 function createEmptyMsg<T>(): Msg<T>
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 ### Types
 
@@ -158,7 +169,7 @@ interface Records<T> {
 }
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)
 
 #### `Msg<T>`
 
@@ -176,4 +187,4 @@ interface Msg<T> {
 }
 ```
 
-[⇧ back to top](#table-of-contents)
+###### [⇡ Top](#table-of-contents)

@@ -30,7 +30,7 @@ function paddedArray<T>(arr: T[], min = 3) {
     return arr;
   }
 
-  return [...arr, ...(new Array(min - arr.length))];
+  return [...arr, ...new Array(min - arr.length)];
 }
 
 const reducer = (state: State, action: Action) => {
@@ -50,8 +50,9 @@ const reducer = (state: State, action: Action) => {
       removedItems.forEach(id => delete newState.byId[id]);
 
       // Finally, update the updated items.
-      Object.values(updatedItems.byId)
-        .forEach(item => { newState.byId[item.id] = item; });
+      Object.values(updatedItems.byId).forEach(item => {
+        newState.byId[item.id] = item;
+      });
 
       return newState;
     }
@@ -100,7 +101,6 @@ export default () => {
         <div className={`${baseClass}__message`}>
           <p className={`${baseClass}__section-title`}>
             <Spinner />
-
             Worker messages
           </p>
 
@@ -111,18 +111,27 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.newItems.ids).map(id => (
-                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
+                <div
+                  key={id || Math.random()}
+                  className={classnames(`${baseClass}__message-item`, {
+                    [`${baseClass}__message-item--empty`]: !id,
+                  })}
+                >
                   {id && (
                     <>
-                      <span className={`${baseClass}__message-field`}>{items.newItems.byId[id].id}</span>
-                      <span className={`${baseClass}__message-field`}>{items.newItems.byId[id].name}</span>
-                      <span className={`${baseClass}__message-field`}>{items.newItems.byId[id].price}</span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.newItems.byId[id].id}
+                      </span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.newItems.byId[id].name}
+                      </span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.newItems.byId[id].price}
+                      </span>
                     </>
                   )}
 
-                  {!id && (
-                    <span className={`${baseClass}__message-field`}>∅</span>
-                  )}
+                  {!id && <span className={`${baseClass}__message-field`}>∅</span>}
                 </div>
               ))}
             </div>
@@ -135,18 +144,27 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.updatedItems.ids).map(id => (
-                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
+                <div
+                  key={id || Math.random()}
+                  className={classnames(`${baseClass}__message-item`, {
+                    [`${baseClass}__message-item--empty`]: !id,
+                  })}
+                >
                   {id && (
                     <>
-                      <span className={`${baseClass}__message-field`}>{items.updatedItems.byId[id].id}</span>
-                      <span className={`${baseClass}__message-field`}>{items.updatedItems.byId[id].name}</span>
-                      <span className={`${baseClass}__message-field`}>{items.updatedItems.byId[id].price}</span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.updatedItems.byId[id].id}
+                      </span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.updatedItems.byId[id].name}
+                      </span>
+                      <span className={`${baseClass}__message-field`}>
+                        {items.updatedItems.byId[id].price}
+                      </span>
                     </>
                   )}
 
-                  {!id && (
-                    <span className={`${baseClass}__message-field`}>∅</span>
-                  )}
+                  {!id && <span className={`${baseClass}__message-field`}>∅</span>}
                 </div>
               ))}
             </div>
@@ -159,13 +177,18 @@ export default () => {
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.removedItems).map(id => (
-                <div key={id || Math.random()} className={classnames(`${baseClass}__message-item`, { [`${baseClass}__message-item--empty`]: !id })}>
-                  {id && (
-                    <span className={`${baseClass}__message-field`}>{id}</span>
-                  )}
+                <div
+                  key={id || Math.random()}
+                  className={classnames(`${baseClass}__message-item`, {
+                    [`${baseClass}__message-item--empty`]: !id,
+                  })}
+                >
+                  {id && <span className={`${baseClass}__message-field`}>{id}</span>}
 
                   {!id && (
-                    <span className={`${baseClass}__message-field`}><strong>∅</strong></span>
+                    <span className={`${baseClass}__message-field`}>
+                      <strong>∅</strong>
+                    </span>
                   )}
                 </div>
               ))}
@@ -175,31 +198,20 @@ export default () => {
 
         <div className={`${baseClass}__state`}>
           <p className={`${baseClass}__section-title`}>
-            <span className={`${baseClass}__badge`}>
-              &#x21BB;
-            </span>
-
+            <span className={`${baseClass}__badge`}>&#x21BB;</span>
             Current state
           </p>
 
-          <Highlight language="json">
-            {JSON.stringify(state, null, 4)}
-          </Highlight>
+          <Highlight language="json">{JSON.stringify(state, null, 4)}</Highlight>
         </div>
 
         <div className={`${baseClass}__rendered`}>
           <p className={`${baseClass}__section-title`}>
-            <span className={`${baseClass}__badge`}>
-              &#x21BB;
-            </span>
-
+            <span className={`${baseClass}__badge`}>&#x21BB;</span>
             Items
           </p>
 
-          <FlipMove
-            className={`${baseClass}__rendered-items`}
-            staggerDurationBy={50}
-          >
+          <FlipMove className={`${baseClass}__rendered-items`} staggerDurationBy={50}>
             {state.ids.map(id => (
               <RenderedItem
                 key={state.byId[id].id}

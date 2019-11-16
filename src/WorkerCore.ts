@@ -83,13 +83,20 @@ export default class WorkerCore<T> {
    * Take two complete sets of data (`Records<T>`), and figure out
    * which items are new, updated, and deleted.
    */
-  private static diff<T extends {}>(before: Records<T>, after: Records<T>, uniqueKey: string): Msg<T> {
+  private static diff<T extends {}>(
+    before: Records<T>,
+    after: Records<T>,
+    uniqueKey: string,
+  ): Msg<T> {
     const { ids: beforeIds } = before;
     const { ids: afterIds } = after;
 
     // Get the set of IDs that are in `after`, but not in `before`.
     const newIds = afterIds.filter(id => !beforeIds.includes(id));
-    const newItems = WorkerCore.normalize<T>(newIds.map(id => after.byId[id]), uniqueKey);
+    const newItems = WorkerCore.normalize<T>(
+      newIds.map(id => after.byId[id]),
+      uniqueKey,
+    );
 
     // Get the set of IDs that are in `before`, but not in `after`.
     const removedIds = beforeIds.filter(id => !afterIds.includes(id));

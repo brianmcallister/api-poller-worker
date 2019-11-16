@@ -4,11 +4,11 @@ global.self = global;
 // eslint-disable-next-line import/first
 import WorkerCore from '../WorkerCore';
 
-jest.mock('../Poller', () => (
+jest.mock('../Poller', () =>
   jest.fn(() => ({
     start: jest.fn(() => ({ subscribe: jest.fn() })),
-  }))
-));
+  })),
+);
 
 describe('WorkerCore', () => {
   describe('constructor', () => {
@@ -36,17 +36,20 @@ describe('WorkerCore', () => {
 
   describe('.normalize', () => {
     it('should normalize objects', () => {
-      const data = [{ id: 1, test: 'val1' }, { id: 2, test: 'val2' }];
+      const data = [
+        { id: 1, test: 'val1' },
+        { id: 2, test: 'val2' },
+      ];
 
       // @ts-ignore
       expect(WorkerCore.normalize(data, 'id')).toStrictEqual({
         ids: [1, 2],
         byId: {
-          "1": {
+          '1': {
             id: 1,
             test: 'val1',
           },
-          "2": {
+          '2': {
             id: 2,
             test: 'val2',
           },
@@ -60,17 +63,17 @@ describe('WorkerCore', () => {
       const stateA = {
         ids: [1, 2, 3],
         byId: {
-          "1": { id: 1, test: 'value1' },
-          "2": { id: 2, test: 'value2' },
-          "3": { id: 3, test: 'value3' },
+          '1': { id: 1, test: 'value1' },
+          '2': { id: 2, test: 'value2' },
+          '3': { id: 3, test: 'value3' },
         },
       };
       const stateB = {
         ids: [2, 3, 4],
         byId: {
-          "2": { id: 2, test: 'value2a' },
-          "3": { id: 3, test: 'value3' },
-          "4": { id: 4, test: 'value4' },
+          '2': { id: 2, test: 'value2a' },
+          '3': { id: 3, test: 'value3' },
+          '4': { id: 4, test: 'value4' },
         },
       };
 
@@ -79,14 +82,14 @@ describe('WorkerCore', () => {
         newItems: {
           ids: [4],
           byId: {
-            "4": { id: 4, test: 'value4' },
+            '4': { id: 4, test: 'value4' },
           },
         },
         removedItems: [1],
         updatedItems: {
           ids: [2],
           byId: {
-            "2": { id: 2, test: 'value2a' },
+            '2': { id: 2, test: 'value2a' },
           },
         },
       });

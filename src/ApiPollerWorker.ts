@@ -25,7 +25,7 @@ export default class ApiPollerWorker<T> {
     this.worker = new Worker(workerUrl);
     this.listeners = new Set();
 
-    this.worker.addEventListener('message', (event) => {
+    this.worker.addEventListener('message', event => {
       const { data } = event;
 
       this.listeners.forEach(listener => listener(data));
@@ -37,5 +37,5 @@ export default class ApiPollerWorker<T> {
    */
   onMessage = (callback: (data: Msg<T>) => void) => {
     this.listeners.add(callback);
-  }
+  };
 }

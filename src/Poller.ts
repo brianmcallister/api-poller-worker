@@ -47,7 +47,7 @@ export default class ApiPoller<T> {
     this.intervalId = setInterval(this.makeRequest, this.interval);
 
     return this;
-  }
+  };
 
   /**
    * Stop polling.
@@ -58,7 +58,7 @@ export default class ApiPoller<T> {
     }
 
     return this;
-  }
+  };
 
   /**
    * Subscribe to updates from the API endpoint.
@@ -67,7 +67,7 @@ export default class ApiPoller<T> {
     this.listeners.add(callback);
 
     return this;
-  }
+  };
 
   /**
    * Make the API request.
@@ -93,5 +93,5 @@ export default class ApiPoller<T> {
       // eslint-disable-next-line no-console
       console.error(error);
     }
-  }
+  };
 }

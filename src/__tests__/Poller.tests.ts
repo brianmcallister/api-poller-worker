@@ -69,7 +69,7 @@ describe('Poller', () => {
   });
 
   describe('stop', () => {
-    it('should clear the interval if it exists',() => {
+    it('should clear the interval if it exists', () => {
       const poller = new Poller({ url: 'test' });
 
       // @ts-ignore
@@ -159,18 +159,16 @@ describe('Poller', () => {
       /* eslint-enable */
     });
 
-    it('should pass through fetchOptions from the constructor', () => {
+    it('should pass through fetchOptions from the constructor', async () => {
       // @ts-ignore
       fetch.mockClear();
 
-      const poller = new Poller({ url: 'test', fetchOptions: { method: 'post' }});
+      const poller = new Poller({ url: 'test', fetchOptions: { method: 'post' } });
 
-      /* eslint-disable promise/catch-or-return, promise/always-return, promise/no-callback-in-promise */
       // @ts-ignore
-      return poller.makeRequest().then(() => {
-        expect(fetch).toHaveBeenCalledWith('test', { method: 'post' });
-      });
-      /* eslint-enable */
+      await poller.makeRequest();
+
+      expect(fetch).toHaveBeenCalledWith('test', { method: 'post' });
     });
 
     it('should log errors', async () => {
@@ -178,7 +176,9 @@ describe('Poller', () => {
       fetch.mockClear();
 
       const poller = new Poller({ url: 'test' });
-      const mockCallback = jest.fn(() => { throw new Error('err'); });
+      const mockCallback = jest.fn(() => {
+        throw new Error('err');
+      });
 
       poller.subscribe(mockCallback);
 
@@ -187,10 +187,11 @@ describe('Poller', () => {
       // @ts-ignore
       await poller.makeRequest();
 
+      // eslint-disable-next-line no-console
       expect(console.error).toHaveBeenCalledWith(expect.any(Error));
 
       // @ts-ignore
-      console.error.mockRestore();
+      console.error.mockRestore(); // eslint-disable-line no-console
     });
   });
 });
