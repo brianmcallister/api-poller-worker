@@ -13,10 +13,10 @@
     "dist/**/*"
   ],
   "scripts": {
-    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ./src ./demo ./demo-server",
+    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ./src ./demo",
     "prepare": "tsc",
     "stylelint": "stylelint demo/**/*.scss",
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "jest --coverage",
     "types": "tsc --noEmit"
   },
   "license": "MIT",

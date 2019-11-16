@@ -13,21 +13,21 @@ interface ApiPollerOptions {
  */
 export default class ApiPoller<T> {
   // Main polling interval ID.
-  intervalId: NodeJS.Timeout | undefined;
+  private intervalId: NodeJS.Timeout | undefined;
 
   // Set of listeners to be called when the API responds.
-  listeners: Set<(data: T[]) => void>;
+  private listeners: Set<(data: T[]) => void>;
 
   // Track if there's a pending request. No need to
   // queue up requests here.
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  requestPending: boolean = false;
+  private requestPending: boolean = false;
 
   // Class options.
-  options: ApiPollerOptions;
+  private options: ApiPollerOptions;
 
   // How often should the API endpoint be polled?
-  interval: number;
+  private interval: number;
 
   /**
    * Constructor.
@@ -91,7 +91,7 @@ export default class ApiPoller<T> {
       this.requestPending = false;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(error)
+      console.error(error);
     }
   }
 }

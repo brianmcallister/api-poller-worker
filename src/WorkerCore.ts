@@ -22,7 +22,7 @@ const ctx: Worker = self as any;
  */
 export default class WorkerCore<T> {
   // Current set of records.
-  records: Records<T>;
+  private records: Records<T>;
 
   /**
    * Constructor.
@@ -35,7 +35,7 @@ export default class WorkerCore<T> {
     this.records = {
       ids: [],
       byId: {},
-    }
+    };
 
     poller.start().subscribe(data => {
       const normalized = WorkerCore.normalize(data, uniqueKey);
@@ -118,6 +118,6 @@ export default class WorkerCore<T> {
       newItems,
       removedItems: removedIds,
       updatedItems,
-    }
+    };
   }
 }

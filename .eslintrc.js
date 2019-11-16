@@ -24,6 +24,7 @@ module.exports = {
   },
   rules: {
     'semi': ['error', 'always'],
+    'comma-dangle': ['error', 'always-multiline'],
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/filename-case': 'off',
     '@typescript-eslint/no-var-requires': 'off',
