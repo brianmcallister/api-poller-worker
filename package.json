@@ -1,9 +1,11 @@
 {
   "name": "@brianmcallister/api-poller-worker",
   "version": "0.1.3",
-  "description": "",
+  "description": "Efficient polling with WebWorkers. Make existing APIs feel real time",
   "main": "dist/index.js",
   "repository": "brianmcallister/api-poller-worker",
+  "homepage": "https://api-poller-worker.netlify.com/",
+  "license": "MIT",
   "author": {
     "name": "Brian Wm. McAllister",
     "email": "brian@brianmcallister.com",
@@ -19,7 +21,6 @@
     "test": "jest --coverage",
     "types": "tsc --noEmit"
   },
-  "license": "MIT",
   "dependencies": {
     "@types/jest": "24.0.23",
     "@typescript-eslint/eslint-plugin": "2.7.0",
