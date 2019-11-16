@@ -36,7 +36,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
     this.state = {
       flash: false,
       newItem: false,
-    }
+    };
   }
 
   /**
@@ -46,7 +46,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
     setTimeout(() => {
       this.setState({ newItem: true }, () => {
         setTimeout(() => {
-          this.setState({ newItem: false })
+          this.setState({ newItem: false });
         }, 500);
       });
     }, 0);
@@ -62,7 +62,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
       setTimeout(() => {
         this.setState({ flash: true }, () => {
           setTimeout(() => {
-            this.setState({ flash: false })
+            this.setState({ flash: false });
           }, 100);
         });
       }, 850);
@@ -84,7 +84,7 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
     const cls = classnames(RenderedItem.baseClass, {
       [`${RenderedItem.baseClass}--flash`]: flash,
       [`${RenderedItem.baseClass}--new`]: newItem,
-    })
+    });
 
     return (
       <div className={cls}>
@@ -92,6 +92,6 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
         <span>{name}</span>
         <span>{RenderedItem.formatMoney(price)}</span>
       </div>
-    )
+    );
   }
 }

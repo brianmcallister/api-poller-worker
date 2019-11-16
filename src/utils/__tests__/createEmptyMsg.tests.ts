@@ -13,5 +13,5 @@ describe('createEmptyMsg', () => {
       },
       removedItems: [],
     });
-  })
-})
+  });
+});

@@ -13,13 +13,13 @@
 
     align-items: center;
     display: flex;
+    flex: 0 0;
     justify-content: flex-end;
     margin: 0 auto;
     padding: 30px;
     position: relative;
     width: 100%;
     z-index: 1;
-    flex: 0 0;
   }
 
   &__header-link {
@@ -41,17 +41,17 @@
   }
 
   &__content {
+    align-items: stretch;
     display: flex;
     flex: 1;
-    align-items: stretch;
   }
 
   &__section-title {
     @include type-style-queens;
 
     color: map-get($colors, barrow);
-    padding: 15px;
     margin: 0;
+    padding: 15px;
     position: relative;
   }
 
@@ -79,8 +79,8 @@
     flex: 0 0 33%;
 
     #{$this}__section-title {
-      display: flex;
       align-items: center;
+      display: flex;
 
       .spinner {
         margin-right: 15px;
@@ -100,7 +100,7 @@
 
     &--updated {
       #{$this}__message-title span {
-        color: #ffbb00;
+        color: #fb0;
       }
     }
 
@@ -114,27 +114,27 @@
   &__message-title {
     @include type-style-brooklyn;
 
-    display: flex;
-    color: map-get($colors, beach);
     align-items: baseline;
+    color: map-get($colors, beach);
+    display: flex;
     padding: 5px 15px;
 
     span {
-      margin-left: 10px;
       font-size: 1.1em;
       font-weight: 700;
+      margin-left: 10px;
     }
   }
 
   &__message-items {
+    border-top: 1px solid rgba(#fff, 0.05);
     font-family: Inconsolata, monospace;
     font-size: 15px;
     margin-top: 15px;
-    border-top: 1px solid rgba(#fff, 0.05);
   }
 
   &__message-item {
-    padding: 5px 10px 6px 10px;
+    padding: 5px 10px 6px;
 
     &:nth-child(even) {
       background-color: rgba(#fff, 0.01);
@@ -150,8 +150,8 @@
   }
 
   &__message-field {
-    margin: 5px;
     color: #7a7165;
+    margin: 5px;
   }
 
   &__state {
@@ -166,15 +166,15 @@
     }
 
     pre {
-      padding: 25px;
       overflow: hidden;
+      padding: 25px;
     }
 
     code {
+      color: #4d4746;
       font-family: Inconsolata, monospace;
       font-size: 15px;
       line-height: 22px;
-      color: #4d4746;
     }
 
     .hljs-attr {
@@ -182,7 +182,7 @@
     }
 
     .hljs-number {
-      color: lawngreen;
+      color: #7cfc00;
     }
 
     .hljs-string {

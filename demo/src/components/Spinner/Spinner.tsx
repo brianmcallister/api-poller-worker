@@ -17,4 +17,4 @@ export default () => (
     <span className={`${baseClass}__segment ${baseClass}__segment--follow`} />
     <span className={`${baseClass}__mask`} />
   </span>
-)
+);

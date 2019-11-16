@@ -51,7 +51,7 @@ const reducer = (state: State, action: Action) => {
 
       // Finally, update the updated items.
       Object.values(updatedItems.byId)
-        .forEach(item => { newState.byId[item.id] = item });
+        .forEach(item => { newState.byId[item.id] = item; });
 
       return newState;
     }
@@ -59,7 +59,7 @@ const reducer = (state: State, action: Action) => {
     default:
       return state;
   }
-}
+};
 
 /**
  * App component.
@@ -213,4 +213,4 @@ export default () => {
       </div>
     </div>
   );
-}
+};

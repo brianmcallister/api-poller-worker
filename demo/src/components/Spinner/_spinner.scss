@@ -24,13 +24,13 @@
   &__segment--lead {
     animation: spinner-rotate $duration linear infinite;
     border-radius: 100% 0 0 100% / 50% 0 0 50%;
-    border-right: none;
+    border-right: 0;
     z-index: 200;
   }
 
   &__segment--follow {
     animation: spinner-flash $duration steps(1, end) infinite reverse;
-    border-left: none;
+    border-left: 0;
     border-radius: 0 100% 100% 0 / 0 50% 50% 0;
     left: 50%;
     opacity: 0;

@@ -8,7 +8,7 @@ const { POLLING_API_URL, NODE_ENV: env = 'development' } = process.env;
 module.exports = {
   mode: env,
   entry: [
-    './workers/worker.ts'
+    './workers/worker.ts',
   ],
   output: {
     path: path.resolve(__dirname, 'dist', 'workers'),
