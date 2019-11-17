@@ -22,10 +22,28 @@ interface Action {
   payload: Msg<Resource>;
 }
 
+/**
+ * Base CSS class.
+ * @private
+ */
 const baseClass = 'app';
+
+/**
+ * Create an initial state for the useRedcuer hook.
+ * @private
+ */
 const createInitialState = () => ({ ids: [], byId: {} });
+
+/**
+ * Initial state for the useReducer hook.
+ * @private
+ */
 const initialState = createInitialState();
 
+/**
+ * Create a 'padded' array of a minimum length.
+ * @private
+ */
 function paddedArray<T>(arr: T[], min = 3) {
   if (arr.length >= min) {
     return arr;
@@ -34,6 +52,10 @@ function paddedArray<T>(arr: T[], min = 3) {
   return [...arr, ...new Array(min - arr.length)];
 }
 
+/**
+ * Reducer for the useReducer hook.
+ * @private
+ */
 const reducer = (state: State, action: Action) => {
   const { type, payload } = action;
 
