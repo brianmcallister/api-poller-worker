@@ -1,6 +1,7 @@
 import { ApiPollerWorker, Msg, createEmptyMsg } from '@brianmcallister/api-poller-worker';
 import classnames from 'classnames';
 import FlipMove from 'react-flip-move';
+import FlipNumbers from 'react-flip-numbers';
 import Highlight from 'react-highlight.js';
 import React from 'react';
 
@@ -105,9 +106,16 @@ export default () => {
           </p>
 
           <div className={`${baseClass}__message-type ${baseClass}__message-type--new`}>
-            <p className={`${baseClass}__message-title`}>
-              New <span>{items.newItems.ids.length}</span>
-            </p>
+            <div className={`${baseClass}__message-title`}>
+              New
+              <FlipNumbers
+                height={20}
+                width={20}
+                play
+                duration={0.5}
+                numbers={`${items.newItems.ids.length}`}
+              />
+            </div>
 
             <div className={`${baseClass}__message-items`}>
               {paddedArray(items.newItems.ids).map(id => (
@@ -139,7 +147,14 @@ export default () => {
 
           <div className={`${baseClass}__message-type ${baseClass}__message-type--updated`}>
             <header className={`${baseClass}__message-title`}>
-              Updated <span>{items.updatedItems.ids.length}</span>
+              Updated
+              <FlipNumbers
+                height={20}
+                width={20}
+                play
+                duration={0.5}
+                numbers={`${items.updatedItems.ids.length}`}
+              />
             </header>
 
             <div className={`${baseClass}__message-items`}>
@@ -172,7 +187,14 @@ export default () => {
 
           <div className={`${baseClass}__message-type ${baseClass}__message-type--removed`}>
             <header className={`${baseClass}__message-title`}>
-              Removed <span>{items.removedItems.length}</span>
+              Removed
+              <FlipNumbers
+                height={20}
+                width={20}
+                play
+                duration={0.5}
+                numbers={`${items.removedItems.length}`}
+              />
             </header>
 
             <div className={`${baseClass}__message-items`}>

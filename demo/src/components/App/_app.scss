@@ -114,15 +114,13 @@
   &__message-title {
     @include type-style-brooklyn;
 
-    align-items: baseline;
     color: map-get($colors, beach);
     display: flex;
     padding: 5px 15px;
 
-    span {
-      font-size: 1.1em;
-      font-weight: 700;
-      margin-left: 10px;
+    section {
+      margin-left: 3px;
+      transform: translateY(3%);
     }
   }
 
