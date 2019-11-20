@@ -14,12 +14,16 @@
 - [API](#api)
   - Classes
     - [`ApiPollerWorker`](#apipollerworker)
+      - [`#start`](#apipollerworkerstart)
+      - [`#stop`](#apipollerworkerstop)
+      - [`#onMessage`](#apipollerworkeronmessage)
     - [`WorkerCore`](#workercore)
   - Utils
     - [`createEmptyMsg`](#createemptymsg)
   - Types
     - [`Records<T>`](#recordst)
     - [`Msg<T>`](#msgt)
+    - [`ApiPollerWorkerOptions`](#apipollerworkeroptions)
 
 ## Demo
 
@@ -46,6 +50,8 @@ npm install @brianmcallister/api-poller-worker
 
 ## Usage
 
+### How to get started
+
 There are two distinct steps to getting this working in your application:
 
 1. Create an [`ApiPollerWorker`](#apipollerworker) instance in your application, and subscribe to updates.
@@ -60,6 +66,25 @@ What this library does _not_ help with is creating the worker files themselves. 
 In short, you need to tell your [`ApiPollerWorker`](#apipollerworker) where your worker is, and then in your worker, you need to tell [`WorkerCore`](#workercore) where the API endpoint you'd like to poll is.
 
 The reason for structuring the code this way is so that you can do other operations on the data from your polled API endpoint _in your worker_, before passing the data back to your application.
+
+### Assumptions
+
+Internally, there are some assumptions being made about the API that is being polled. Specifically that the API endpoint responds with JSON, as a list of objects with a unique identifier.
+
+Which key is used as the unique identifier is configurable (see [`WorkerCore`](#workercore)), but there does need to be one. As long as your endpoint responds with something like this, everything should work just fine:
+
+```json
+[
+  {
+    "id": 1,
+    "some": "value"
+  },
+  {
+    "id": 2,
+    "some": "other value"
+  }
+]
+```
 
 ###### [⇡ Top](#table-of-contents)
 
@@ -77,10 +102,37 @@ The `ApiPollerWorker` class is what coordinates the communcation between
 your app and your worker. The constructor accepts the following:
 
 ```ts
-interface Options {
+interface ApiPollerWorkerOptions {
   // URL of the Worker to be created.
   workerUrl: string;
+  // Tell the worker to start polling immediately.
+  // Defaults to true.
+  autoStart?: boolean;
 }
+```
+
+##### `ApiPollerWorker#start`
+
+Send a message (via `postMessage`) to the worker, telling it to start polling.
+
+```ts
+const pollerWorker = new ApiPollerWorker<Resource>({
+  workerUrl: '/my-worker-file.js',
+});
+
+pollerWorker.start();
+```
+
+##### `ApiPollerWorker#stop`
+
+Send a message (via `postMessage`) to the worker, telling it to stop polling.
+
+```ts
+const pollerWorker = new ApiPollerWorker<Resource>({
+  workerUrl: '/my-worker-file.js',
+});
+
+pollerWorker.stop();
 ```
 
 ##### `ApiPollerWorker#onMessage`
@@ -184,6 +236,23 @@ interface Msg<T> {
   newItems: Records<T>;
   updatedItems: Records<T>;
   removedItems: string[];
+}
+```
+
+###### [⇡ Top](#table-of-contents)
+
+#### `ApiPollerWorkerOptions`
+
+Options object accepted by [`ApiPollerWorker`](#apipollerworker).
+
+```ts
+import { ApiPollerWorkerOptions } from '@brianmcallister/api-poller-worker';
+```
+
+```ts
+interface ApiPollerWorkerOptions {
+  workerUrl: string;
+  autoStart?: boolean;
 }
 ```
 

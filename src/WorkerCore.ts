@@ -8,6 +8,8 @@ interface WorkerCoreOptions {
   interval?: number;
 }
 
+type IncomingMessage = { data: { type: 'start' } } | { data: { type: 'stop' } };
+
 // Set up a global object for WebWorkers.
 // See: https://github.com/Microsoft/TypeScript/issues/20595#issuecomment-390359040
 // eslint-disable-next-line no-restricted-globals, @typescript-eslint/no-explicit-any
@@ -24,20 +26,41 @@ export default class WorkerCore<T> {
   // Current set of records.
   private records: Records<T>;
 
+  private poller: Poller<T>;
+
   /**
    * Constructor.
    * @constructor
    */
   constructor(options: WorkerCoreOptions) {
     const { url, uniqueKey = 'id', interval = 2000 } = options;
-    const poller = new Poller<T>({ url, interval });
 
+    this.poller = new Poller<T>({ url, interval });
     this.records = {
       ids: [],
       byId: {},
     };
 
-    poller.start().subscribe(data => {
+    // Handle incoming messages.
+    ctx.addEventListener('message', message => {
+      const { data }: IncomingMessage = message;
+
+      switch (data.type) {
+        case 'start': {
+          this.poller.start();
+          break;
+        }
+        case 'stop': {
+          this.poller.stop();
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
+    // Subscribe to data from the Poller instance.
+    this.poller.subscribe(data => {
       const normalized = WorkerCore.normalize(data, uniqueKey);
       const update = WorkerCore.diff(this.records, normalized, uniqueKey);
 
