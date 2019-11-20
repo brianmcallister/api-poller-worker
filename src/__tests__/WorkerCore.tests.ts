@@ -110,7 +110,7 @@ describe('WorkerCore', () => {
 
       expect(() => {
         // @ts-ignore
-        WorkerCore.normalize(data, '_id')
+        WorkerCore.normalize(data, '_id');
       }).toThrowError();
     });
   });
