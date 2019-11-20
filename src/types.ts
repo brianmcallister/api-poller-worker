@@ -8,3 +8,8 @@ export interface Msg<T> {
   updatedItems: Records<T>;
   removedItems: string[];
 }
+
+export interface ApiPollerWorkerOptions {
+  workerUrl: string;
+  autoStart?: boolean;
+}
