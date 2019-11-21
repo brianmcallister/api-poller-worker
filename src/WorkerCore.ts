@@ -81,6 +81,10 @@ export default class WorkerCore<T> {
 
     data.forEach((datum: T) => {
       if (!Object.prototype.hasOwnProperty.call(datum, uniqueKey)) {
+        // Don't do a template string here because it interfers with the
+        // inlined worker. This file will become a giant string in the
+        // compiled version and the template string syntax creates problems.
+        // eslint-disable-next-line prefer-template
         throw new Error('Resource does not have key named: ' + uniqueKey);
       }
 
