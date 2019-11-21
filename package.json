@@ -22,8 +22,9 @@
     "javascript"
   ],
   "scripts": {
+    "build:worker": "rollup -c",
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ./src ./demo",
-    "prepare": "tsc && rimraf dist/*/__tests__",
+    "prepare": "rimraf dist && tsc",
     "stylelint": "stylelint demo/**/*.scss",
     "test": "jest --coverage",
     "types": "tsc --noEmit"
@@ -53,5 +54,16 @@
     "stylelint-scss": "3.12.1",
     "ts-jest": "24.1.0",
     "typescript": "3.7.2"
+  },
+  "dependencies": {
+    "@babel/cli": "7.7.0",
+    "@babel/core": "7.7.2",
+    "@babel/preset-env": "7.7.1",
+    "@babel/preset-typescript": "7.7.2",
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.3",
+    "rollup": "1.27.2",
+    "rollup-plugin-babel": "4.3.3",
+    "rollup-plugin-typescript": "1.0.1"
   }
 }

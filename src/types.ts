@@ -10,6 +10,8 @@ export interface Msg<T> {
 }
 
 export interface ApiPollerWorkerOptions {
-  workerUrl: string;
+  workerUrl?: string;
   autoStart?: boolean;
+  inline?: boolean;
+  apiUrl?: string;
 }

@@ -1,5 +1,9 @@
 import ApiPollerWorker from '../ApiPollerWorker';
 
+jest.mock('../inlineWorker', () => {
+  return { default: 'test and %%__REPLACE__%%' };
+});
+
 describe('ApiPollerWorker', () => {
   const addEventListener = jest.fn().mockName('addEventListener');
   const postMessage = jest.fn().mockName('postMessage');
@@ -37,6 +41,35 @@ describe('ApiPollerWorker', () => {
       callback({ data: 'test data' });
 
       expect(mockListener).toHaveBeenCalledWith('test data');
+    });
+
+    it('should throw an error if inline is true but apiUrl is null', () => {
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new ApiPollerWorker({ inline: true });
+      }).toThrowError();
+    });
+
+    it('should throw an error if inline is false but workerUrl is null', () => {
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new ApiPollerWorker({});
+      }).toThrowError();
+    });
+
+    it('should create an inline worker if inline is true', () => {
+      // @ts-ignore
+      window.Blob = jest.fn(i => i);
+      window.URL.createObjectURL = jest.fn(i => i);
+
+      // @ts-ignore
+      const spy = jest.spyOn(ApiPollerWorker, 'createInlineWorker');
+
+      // eslint-disable-next-line no-new
+      new ApiPollerWorker({ inline: true, apiUrl: 'test api url' });
+
+      expect(spy).toHaveBeenCalledWith('test api url');
+      expect(spy).toHaveReturnedWith(['test and test api url']);
     });
 
     it('should automatically start polling', () => {

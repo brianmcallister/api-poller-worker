@@ -81,7 +81,7 @@ export default class WorkerCore<T> {
 
     data.forEach((datum: T) => {
       if (!Object.prototype.hasOwnProperty.call(datum, uniqueKey)) {
-        throw new Error(`Resource does not have key named: "${uniqueKey}"`);
+        throw new Error('Resource does not have key named: ' + uniqueKey);
       }
 
       // At this point, we have no idea what `T` is going to be,
