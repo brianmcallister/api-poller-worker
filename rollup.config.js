@@ -2,16 +2,20 @@ import path from 'path';
 import babel from 'rollup-plugin-babel';
 import typescript from 'rollup-plugin-typescript';
 
-function test() {
+/**
+ * Rollup plugin to wrap in the inlineWorker in a string.
+ */
+function wrapInlineWorker() {
   return {
-    name: 'my-example', // this name will show up in warnings and errors
-    generateBundle(options, bundle) {
+    name: 'wrap-inline-worker',
+    generateBundle(_, bundle) {
       const { code } = bundle['inlineWorker.js'];
 
+      // eslint-disable-next-line no-param-reassign
       bundle['inlineWorker.js'].code = `module.exports.default = \`${code}\`;`;
 
       return null;
-    }
+    },
   };
 }
 
@@ -21,5 +25,5 @@ module.exports = {
     file: path.resolve(__dirname, 'dist', 'inlineWorker.js'),
     format: 'iife',
   },
-  plugins: [test(), babel(), typescript({ removeComments: true, target: 'es5' })],
+  plugins: [wrapInlineWorker(), babel(), typescript({ removeComments: true, target: 'es5' })],
 };
