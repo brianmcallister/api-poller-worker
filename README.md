@@ -52,7 +52,24 @@ npm install @brianmcallister/api-poller-worker
 
 ### How to get started
 
-There are two distinct steps to getting this working in your application:
+There are two ways to use this library:
+
+1. Set `inline` to `true` when creating an `ApiPollerWorker`. Doing this will create an [inline worker](https://www.html5rocks.com/en/tutorials/workers/basics/#toc-inlineworkers). Although this is much easier than option 2, if you need fine grained control over what's going on inside the worker (such as making other XHR requests, doing expensive calculations based on the data returned by the API that you're polling, etc.), you'll want to try...
+2. Provide a URL to a worker file. Within that worker file, you need to create an instance of `WorkerCore`. If you do this, you now have the ability to manipulate the data from the API endpoint before you pass it back to your application. You also have the ability to pass more fine grained options to the `WorkerCore` class.
+
+#### Option 1: Inline worker
+
+Here's an example of how to create an inline worker:
+
+```ts
+const worker = ApiPollerWorker({ inline: true, apiUrl: '<my api url>' });
+
+worker.onMessage(data => console.log(data));
+```
+
+#### Option 2: Create your own Worker.
+
+There are two distinct steps to getting this working:
 
 1. Create an [`ApiPollerWorker`](#apipollerworker) instance in your application, and subscribe to updates.
 2. Create a web worker, and create a [`WorkerCore`](#workercore) instance inside of it.
@@ -103,11 +120,18 @@ your app and your worker. The constructor accepts the following:
 
 ```ts
 interface ApiPollerWorkerOptions {
-  // URL of the Worker to be created.
-  workerUrl: string;
+  // URL of the API endpoint to poll. This is only required
+  // if inline is true.
+  apiUrl?: string;
   // Tell the worker to start polling immediately.
   // Defaults to true.
   autoStart?: boolean;
+  // Create an inline worker.
+  // Defaults to false.
+  inline?: boolean;
+  // URL of the Worker to be created.
+  // This option is required if inline is false.
+  workerUrl?: string;
 }
 ```
 
@@ -251,8 +275,10 @@ import { ApiPollerWorkerOptions } from '@brianmcallister/api-poller-worker';
 
 ```ts
 interface ApiPollerWorkerOptions {
-  workerUrl: string;
+  apiUrl?: string;
   autoStart?: boolean;
+  inline?: boolean;
+  workerUrl?: string;
 }
 ```
 
