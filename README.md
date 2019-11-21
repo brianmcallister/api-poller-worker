@@ -198,7 +198,7 @@ interface WorkerCoreOptions {
 }
 ```
 
-Here's an example of the simplist possible Worker file (with type safety).
+Here's an example of the simplest possible Worker file (with type safety).
 
 > `worker.ts`
 
