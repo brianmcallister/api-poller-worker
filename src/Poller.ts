@@ -1,7 +1,7 @@
 interface ApiPollerOptions {
-  url: string;
-  interval?: number;
   fetchOptions?: RequestInit;
+  interval?: number;
+  url: string;
 }
 
 /**
@@ -43,6 +43,7 @@ export default class ApiPoller<T> {
    * Start polling the API endpoint.
    */
   start = () => {
+    this.stop();
     this.makeRequest();
     this.intervalId = setInterval(this.makeRequest, this.interval);
 
@@ -87,11 +88,11 @@ export default class ApiPoller<T> {
       const json = await req.json();
 
       this.listeners.forEach(listener => listener(json));
-
-      this.requestPending = false;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
+    } finally {
+      this.requestPending = false;
     }
   };
 }

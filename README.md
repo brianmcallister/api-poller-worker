@@ -198,6 +198,8 @@ The `WorkerCore` class is the what you need to create an instance of in your Wor
 
 ```ts
 interface WorkerCoreOptions {
+  // Options to pass to `fetch`.
+  fetchOptions?: RequestInit;
   // URL to poll.
   url: string;
   // Unique key for the resources returned by the API.
