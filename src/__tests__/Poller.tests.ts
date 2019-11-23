@@ -34,11 +34,7 @@ describe('Poller', () => {
       // @ts-ignore
       expect(poller.makeRequest).toHaveBeenCalledWith();
       // @ts-ignore
-      expect(poller.intervalId).toEqual({
-        id: 1,
-        ref: expect.any(Function),
-        unref: expect.any(Function),
-      });
+      expect(poller.intervalId).toStrictEqual(1);
     });
 
     it('should start an interval', () => {
@@ -182,16 +178,14 @@ describe('Poller', () => {
 
       poller.subscribe(mockCallback);
 
-      jest.spyOn(console, 'error');
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       // @ts-ignore
       await poller.makeRequest();
 
-      // eslint-disable-next-line no-console
-      expect(console.error).toHaveBeenCalledWith(expect.any(Error));
+      expect(spy).toHaveBeenCalledWith(expect.any(Error));
 
-      // @ts-ignore
-      console.error.mockRestore(); // eslint-disable-line no-console
+      spy.mockRestore();
     });
   });
 });
