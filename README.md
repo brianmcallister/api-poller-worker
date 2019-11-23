@@ -116,6 +116,10 @@ interface ApiPollerWorkerOptions {
 Send a message (via `postMessage`) to the worker, telling it to start polling.
 
 ```ts
+start(): this;
+```
+
+```ts
 const pollerWorker = new ApiPollerWorker<Resource>({
   workerUrl: '/my-worker-file.js',
 });
@@ -128,6 +132,10 @@ pollerWorker.start();
 Send a message (via `postMessage`) to the worker, telling it to stop polling.
 
 ```ts
+stop(): this;
+```
+
+```ts
 const pollerWorker = new ApiPollerWorker<Resource>({
   workerUrl: '/my-worker-file.js',
 });
@@ -138,6 +146,10 @@ pollerWorker.stop();
 ##### `ApiPollerWorker#onMessage`
 
 Subscribe to updates from the `ApiPollerWorker` instance. The response is a [`Msg<T>`](#msgt), which is structured so that your application will know exactly which resources in your polled endpoint are new, updated, or removed.
+
+```ts
+onMessage(callback: (data: Msg<T>) => void): this;
+```
 
 ```ts
 const pollerWorker = new ApiPollerWorker<Resource>({
@@ -199,7 +211,7 @@ import { createEmptyMsg } from '@brianmcallister/api-poller-worker';
 ```
 
 ```ts
-function createEmptyMsg<T>(): Msg<T>
+createEmptyMsg<T>(): Msg<T>
 ```
 
 ###### [⇡ Top](#table-of-contents)
