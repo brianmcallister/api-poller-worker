@@ -37,6 +37,16 @@ describe('Poller', () => {
       expect(poller.intervalId).toStrictEqual(1);
     });
 
+    it('should clear any previous intervals by calling stop', () => {
+      const poller = new Poller({ url: 'test' });
+
+      const spy = jest.spyOn(poller, 'stop');
+
+      poller.start();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
     it('should start an interval', () => {
       // @ts-ignore
       setInterval.mockClear();

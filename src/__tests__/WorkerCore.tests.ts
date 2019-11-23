@@ -7,6 +7,8 @@ global.self.postMessage = jest.fn().mockName('postMessage');
 
 // eslint-disable-next-line import/first
 import WorkerCore from '../WorkerCore';
+// eslint-disable-next-line import/first
+import Poller from '../Poller';
 
 jest.mock('../Poller', () =>
   jest.fn(() => {
@@ -22,6 +24,20 @@ jest.mock('../Poller', () =>
 
 describe('WorkerCore', () => {
   describe('constructor', () => {
+    it('passes fetchOptions to Poller', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const worker = new WorkerCore({ url: 'test', fetchOptions: { method: 'test value' } });
+
+      expect(Poller).toHaveBeenCalledTimes(1);
+      expect(Poller).toHaveBeenCalledWith({
+        url: 'test',
+        interval: 2000,
+        fetchOptions: {
+          method: 'test value',
+        },
+      });
+    });
+
     it('create a records property', () => {
       const worker = new WorkerCore({ url: 'test' });
 

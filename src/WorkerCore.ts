@@ -3,9 +3,10 @@ import Poller from './Poller';
 import { Records, Msg } from './types';
 
 interface WorkerCoreOptions {
-  url: string;
-  uniqueKey?: string;
+  fetchOptions?: RequestInit;
   interval?: number;
+  uniqueKey?: string;
+  url: string;
 }
 
 type IncomingMessage = { data: { type: 'start' } } | { data: { type: 'stop' } };
@@ -26,6 +27,7 @@ export default class WorkerCore<T> {
   // Current set of records.
   private records: Records<T>;
 
+  // Keep track of the poller instance.
   private poller: Poller<T>;
 
   /**
@@ -33,9 +35,9 @@ export default class WorkerCore<T> {
    * @constructor
    */
   constructor(options: WorkerCoreOptions) {
-    const { url, uniqueKey = 'id', interval = 2000 } = options;
+    const { url, uniqueKey = 'id', interval = 2000, fetchOptions } = options;
 
-    this.poller = new Poller<T>({ url, interval });
+    this.poller = new Poller<T>({ url, interval, fetchOptions });
     this.records = {
       ids: [],
       byId: {},
