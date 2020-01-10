@@ -1,6 +1,6 @@
 {
   "name": "api-poller-worker",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Efficient polling with WebWorkers. Make existing APIs feel real time",
   "main": "dist/index.js",
   "repository": "brianmcallister/api-poller-worker",
