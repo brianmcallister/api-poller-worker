@@ -1,6 +1,6 @@
-# @brianmcallister/api-poller-worker
+# api-poller-worker
 
-[![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://img.shields.io/npm/v/@brianmcallister/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/@brianmcallister/api-poller-worker)
+[![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
 
 > Efficient polling with WebWorkers. Make existing APIs feel real time
 
@@ -43,7 +43,7 @@ npm start
 ## Installation
 
 ```sh
-npm install @brianmcallister/api-poller-worker
+npm install api-poller-worker
 ```
 
 ###### [⇡ Top](#table-of-contents)
@@ -112,7 +112,7 @@ Which key is used as the unique identifier is configurable (see [`WorkerCore`](#
 #### `ApiPollerWorker`
 
 ```ts
-import { ApiPollerWorker } from '@brianmcallister/api-poller-worker';
+import { ApiPollerWorker } from 'api-poller-worker';
 ```
 
 The `ApiPollerWorker` class is what coordinates the communcation between
@@ -191,7 +191,7 @@ pollerWorker.onMessage(data => {
 #### `WorkerCore`
 
 ```ts
-import { WorkerCore } from '@brianmcallister/api-poller-worker';
+import { WorkerCore } from 'api-poller-worker';
 ```
 
 The `WorkerCore` class is the what you need to create an instance of in your Worker. The constructor accepts the following options:
@@ -217,7 +217,7 @@ Here's an example of the simplest possible Worker file (with type safety).
 > `worker.ts`
 
 ```ts
-import { WorkerCore } from '@brianmcallister/api-poller-worker';
+import { WorkerCore } from 'api-poller-worker';
 
 import { Resource } from '../src/types';
 
@@ -233,7 +233,7 @@ new WorkerCore<Resource>({ url: '<some endpoint>' });
 Create the [`Msg<T>`](#msgt) structure, but empty. Useful for building default state for a slice of Redux state.
 
 ```ts
-import { createEmptyMsg } from '@brianmcallister/api-poller-worker';
+import { createEmptyMsg } from 'api-poller-worker';
 ```
 
 ```ts
@@ -249,7 +249,7 @@ createEmptyMsg<T>(): Msg<T>
 Keep track of a normalized set of records.
 
 ```ts
-import { Records } from '@brianmcallister/api-poller-worker';
+import { Records } from 'api-poller-worker';
 ```
 
 ```ts
@@ -266,7 +266,7 @@ interface Records<T> {
 Represents the contents of the message emitted by the [`WorkerCore`](#workercore).
 
 ```ts
-import { Msg } from '@brianmcallister/api-poller-worker';
+import { Msg } from 'api-poller-worker';
 ```
 
 ```ts
@@ -284,7 +284,7 @@ interface Msg<T> {
 Options object accepted by [`ApiPollerWorker`](#apipollerworker).
 
 ```ts
-import { ApiPollerWorkerOptions } from '@brianmcallister/api-poller-worker';
+import { ApiPollerWorkerOptions } from 'api-poller-worker';
 ```
 
 ```ts
