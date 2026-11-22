@@ -96,7 +96,7 @@ export default () => {
 
   React.useEffect(() => {
     pollerWorker = new ApiPollerWorker<Resource>({
-      workerUrl: '/workers/main.worker.bundle.js',
+      workerUrl: 'workers/main.worker.bundle.js',
     });
 
     pollerWorker.onMessage(data => {
