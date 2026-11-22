@@ -27,7 +27,7 @@
 
 ## Demo
 
-Hosted demo: [https://api-poller-worker.netlify.com/](https://api-poller-worker.netlify.com/)
+Hosted demo: [https://brianmcallister.github.io/api-poller-worker/](https://brianmcallister.github.io/api-poller-worker/)
 
 You can also run the demo locally. To get started:
 

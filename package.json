@@ -4,7 +4,7 @@
   "description": "Efficient polling with WebWorkers. Make existing APIs feel real time",
   "main": "dist/index.js",
   "repository": "brianmcallister/api-poller-worker",
-  "homepage": "https://api-poller-worker.netlify.com/",
+  "homepage": "https://brianmcallister.github.io/api-poller-worker/",
   "license": "MIT",
   "author": {
     "name": "Brian Wm. McAllister",
