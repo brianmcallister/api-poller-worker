@@ -55,7 +55,7 @@
     "rollup": "1.27.2",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-typescript": "1.0.1",
-    "stylelint": "11.1.1",
+    "stylelint": "18.1.0",
     "stylelint-config-recommended": "3.0.0",
     "stylelint-config-sass-guidelines": "6.1.0",
     "stylelint-scss": "3.12.1",
