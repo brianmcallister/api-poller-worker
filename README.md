@@ -1,6 +1,6 @@
 # api-poller-worker
 
-[![codecov](https://codecov.io/gh/brianmcallister/api-poller-worker/branch/master/graph/badge.svg)](https://codecov.io/gh/brianmcallister/api-poller-worker) [![CircleCI](https://circleci.com/gh/brianmcallister/api-poller-worker.svg?style=svg)](https://circleci.com/gh/brianmcallister/api-poller-worker) [![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
+[![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
 
 > Efficient polling with WebWorkers. Make existing APIs feel real time
 
@@ -78,7 +78,7 @@ What this library does _not_ help with is creating the worker files themselves. 
 
 - [Worker documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
 - [`worker-loader`, a webpack plugin](https://github.com/webpack-contrib/worker-loader)
-- [Demo application source](https://github.com/brianmcallister/api-poller-worker/tree/master/demo)
+- [Demo application source](https://github.com/brianmcallister/api-poller-worker/tree/main/demo)
 
 In short, you need to tell your [`ApiPollerWorker`](#apipollerworker) where your worker is, and then in your worker, you need to tell [`WorkerCore`](#workercore) where the API endpoint you'd like to poll is.
 
