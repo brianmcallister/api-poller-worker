@@ -1,98 +1,92 @@
-interface ApiPollerOptions {
+export interface PollerOptions {
   fetchOptions?: RequestInit;
   interval?: number;
   url: string;
 }
 
 /**
- * ApiPoller class
- * @class
- *
- * Acceps a generic, `T`, which represents the type
- * of data returned by the polled endpoint.
+ * Polls an API endpoint that responds with a JSON array.
  */
-export default class ApiPoller<T> {
-  // Main polling interval ID.
-  private intervalId: NodeJS.Timeout | undefined;
+export class Poller<T> {
+  private intervalId: ReturnType<typeof setInterval> | undefined;
 
-  // Set of listeners to be called when the API responds.
-  private listeners: Set<(data: T[]) => void>;
+  private requestPending = false;
 
-  // Track if there's a pending request. No need to
-  // queue up requests here.
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  private requestPending: boolean = false;
+  private readonly listeners = new Set<(data: T[]) => void>();
 
-  // Class options.
-  private options: ApiPollerOptions;
+  private readonly errorListeners = new Set<(error: Error) => void>();
 
-  // How often should the API endpoint be polled?
-  private interval: number;
+  private readonly options: PollerOptions;
 
-  /**
-   * Constructor.
-   * @constructor
-   */
-  constructor(options: ApiPollerOptions) {
+  constructor(options: PollerOptions) {
     this.options = options;
-    this.interval = options.interval || 2000;
-    this.listeners = new Set();
   }
 
-  /**
-   * Start polling the API endpoint.
-   */
-  start = () => {
+  /** Start polling, with the first request right away. */
+  start() {
     this.stop();
-    this.makeRequest();
-    this.intervalId = setInterval(this.makeRequest, this.interval);
+    void this.request();
+    this.intervalId = setInterval(() => void this.request(), this.options.interval ?? 2000);
 
     return this;
-  };
+  }
 
-  /**
-   * Stop polling.
-   */
-  stop = () => {
-    if (this.intervalId) {
+  /** Stop polling. */
+  stop() {
+    if (this.intervalId !== undefined) {
       clearInterval(this.intervalId);
+      this.intervalId = undefined;
     }
 
     return this;
-  };
+  }
 
-  /**
-   * Subscribe to updates from the API endpoint.
-   */
-  subscribe = (callback: (data: T[]) => void) => {
+  /** Call `callback` with each response. */
+  subscribe(callback: (data: T[]) => void) {
     this.listeners.add(callback);
 
     return this;
-  };
+  }
 
-  /**
-   * Make the API request.
-   * @private
-   */
-  private makeRequest = async () => {
+  /** Call `callback` when a request fails or the response isn't an array. */
+  onError(callback: (error: Error) => void) {
+    this.errorListeners.add(callback);
+
+    return this;
+  }
+
+  private async request() {
+    // Don't stack up requests when the API is slower than the interval.
     if (this.requestPending) {
       return;
     }
 
-    const { url, fetchOptions } = this.options;
+    this.requestPending = true;
 
     try {
-      this.requestPending = true;
+      const response = await fetch(this.options.url, this.options.fetchOptions);
 
-      const req = await fetch(url, fetchOptions);
-      const json = await req.json();
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${String(response.status)}`);
+      }
 
-      this.listeners.forEach(listener => listener(json));
+      const data: unknown = await response.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error('Expected the API to respond with a JSON array');
+      }
+
+      for (const listener of this.listeners) {
+        listener(data as T[]);
+      }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
+      const reported = error instanceof Error ? error : new Error(String(error));
+
+      for (const listener of this.errorListeners) {
+        listener(reported);
+      }
     } finally {
       this.requestPending = false;
     }
-  };
+  }
 }

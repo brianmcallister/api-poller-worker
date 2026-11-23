@@ -1,136 +1,132 @@
-import { ApiPollerWorkerOptions, Msg } from './types';
+import inlineWorkerSource from 'inline-worker-source';
+
+import type { ApiPollerWorkerOptions, ControlMessage, Msg, WorkerMessage } from './types';
 
 /**
- * ApiPollerWorker class.
- * @class
+ * Polls an API in a web worker, and tells you what changed in each response.
  */
-export default class ApiPollerWorker<T> {
-  // Worker instance.
-  // @private
-  private worker: Worker;
+export class ApiPollerWorker<T> {
+  private readonly worker: Worker;
 
-  // Set of message event listeners.
-  // @private
-  private listeners: Set<(data: Msg<T>) => void>;
+  private readonly listeners = new Set<(msg: Msg<T>) => void>();
 
-  // Keep track of if we've started polling.
-  // @private
+  private readonly errorListeners = new Set<(error: Error) => void>();
+
   private started = false;
 
-  // Default constructor options.
-  // @private
-  // @static
-  private static defaultOptions = {
-    inline: false,
-    autoStart: true,
-  };
+  // The URL of the inline worker's source, revoked when the worker is terminated.
+  private inlineUrl: string | undefined;
 
-  /**
-   * Constructor.
-   * @constructor
-   */
-  constructor(rawOptions: ApiPollerWorkerOptions) {
-    const options = { ...ApiPollerWorker.defaultOptions, ...rawOptions };
-    const { autoStart } = options;
+  constructor(options: ApiPollerWorkerOptions) {
+    const { autoStart = true } = options;
 
-    this.worker = new Worker(ApiPollerWorker.getWorkerSrc(options));
-    this.listeners = new Set();
+    this.worker = this.createWorker(options);
 
-    this.worker.addEventListener('message', event => {
+    this.worker.addEventListener('message', (event: MessageEvent<WorkerMessage<T>>) => {
       const { data } = event;
 
-      this.listeners.forEach(listener => listener(data));
+      if (data.type === 'update') {
+        for (const listener of this.listeners) {
+          listener(data.msg);
+        }
+      } else {
+        const error = new Error(data.message);
+
+        for (const listener of this.errorListeners) {
+          listener(error);
+        }
+      }
     });
 
-    // Automatically start polling right away.
+    if (options.inline) {
+      this.send({
+        type: 'init',
+        options: {
+          url: options.apiUrl ?? '',
+          fetchOptions: options.fetchOptions,
+          interval: options.interval,
+          uniqueKey: options.uniqueKey,
+        },
+      });
+    }
+
     if (autoStart) {
       this.start();
     }
   }
 
-  /**
-   * Get the workerSrc, which might be inline, or might just be
-   * a URL.
-   */
-  private static getWorkerSrc(options: ApiPollerWorkerOptions) {
-    const { inline, apiUrl, workerUrl } = options;
-
-    if (inline) {
-      if (!apiUrl) {
-        throw new Error(
-          '[ApiPollerWorker] The "inline" option is set to "true", but no "apiUrl" was provided.',
-        );
-      }
-
-      return ApiPollerWorker.createInlineWorker(apiUrl);
-    }
-
-    if (!workerUrl) {
-      throw new Error('[ApiPollerWorker] The "workerUrl" option was not provided.');
-    }
-
-    return workerUrl;
-  }
-
-  /**
-   * Create an inline worker using `Blob`.
-   * @private
-   * @static
-   */
-  private static createInlineWorker(apiUrl: string) {
-    // This is weird and not obvious what's going on just from
-    // reading the source. In the `src` directory, this is
-    // pointing at the TypeScript version of inlineWorker.
-    // However, the compiled version of inlineWorker is _not_
-    // passed through `tsc`. Instead, it gets built with
-    // Rollup. The reason for this is because it's being inlined
-    // as a Blob, and then turned into a string, it needs
-    // to be bundled to run in a worker context (the rest of
-    // the files in this project are not bundled for the web,
-    // with the expectation that consumers of this package have
-    // a build pipeline for their web applications already in
-    // place).
-    // eslint-disable-next-line global-require
-    const inlineWorker: { default: string } = require('./inlineWorker');
-    const blob = new Blob([inlineWorker.default.replace('%%__REPLACE__%%', apiUrl)]);
-
-    return window.URL.createObjectURL(blob);
-  }
-
-  /**
-   * Send a start message to the worker.
-   */
+  /** Start polling. */
   start() {
-    if (this.started) {
-      return this;
-    }
-
-    this.started = true;
-    this.worker.postMessage({ type: 'start' });
-
-    return this;
-  }
-
-  /**
-   * Send a stop message to the worker.
-   */
-  stop() {
     if (!this.started) {
-      return this;
+      this.started = true;
+      this.send({ type: 'start' });
     }
-
-    this.started = false;
-    this.worker.postMessage({ type: 'stop' });
 
     return this;
   }
 
-  /**
-   * Subscribe to message events from the worker instance.
-   */
-  onMessage(callback: (data: Msg<T>) => void) {
+  /** Stop polling. Call `start` to poll again. */
+  stop() {
+    if (this.started) {
+      this.started = false;
+      this.send({ type: 'stop' });
+    }
+
+    return this;
+  }
+
+  /** Call `callback` with what changed after each response. */
+  onMessage(callback: (msg: Msg<T>) => void) {
     this.listeners.add(callback);
 
     return this;
+  }
+
+  /** Call `callback` when a request fails, or the response isn't an array of objects. */
+  onError(callback: (error: Error) => void) {
+    this.errorListeners.add(callback);
+
+    return this;
+  }
+
+  /** Stop polling and shut the worker down for good. */
+  terminate() {
+    this.started = false;
+    this.worker.terminate();
+
+    if (this.inlineUrl) {
+      URL.revokeObjectURL(this.inlineUrl);
+      this.inlineUrl = undefined;
+    }
+  }
+
+  private send(message: ControlMessage) {
+    this.worker.postMessage(message);
+  }
+
+  private createWorker(options: ApiPollerWorkerOptions) {
+    if (options.inline) {
+      if (!options.apiUrl) {
+        throw new Error('[ApiPollerWorker] "inline" is set, but no "apiUrl" was provided.');
+      }
+
+      this.inlineUrl = URL.createObjectURL(
+        new Blob([inlineWorkerSource], { type: 'text/javascript' }),
+      );
+
+      return new Worker(this.inlineUrl);
+    }
+
+    if (options.worker) {
+      return options.worker;
+    }
+
+    if (options.workerUrl) {
+      return new Worker(options.workerUrl);
+    }
+
+    throw new Error(
+      '[ApiPollerWorker] Provide "worker" or "workerUrl", or set "inline" with an "apiUrl".',
+    );
   }
 }
