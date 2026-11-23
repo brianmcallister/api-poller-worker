@@ -1,4 +1,8 @@
-@import '../../styles/base';
+@use "sass:color";
+@use "sass:map";
+@use '../../styles/base';
+@use "../../styles/mixins/typography";
+@use "../../styles/variables/colors";
 
 .app {
   $this: &;
@@ -9,7 +13,7 @@
   height: 100vh;
 
   &__header {
-    @include type-style-manhattan;
+    @include typography.type-style-manhattan;
 
     align-items: center;
     display: flex;
@@ -23,14 +27,14 @@
   }
 
   &__header-link {
-    color: map-get($colors, allen);
+    color: map.get(colors.$colors, allen);
     margin-left: 10px;
     text-decoration: none;
   }
 
   &__header-links {
     a {
-      color: map-get($colors, allen);
+      color: map.get(colors.$colors, allen);
       margin-left: 10px;
       text-decoration: none;
 
@@ -47,9 +51,9 @@
   }
 
   &__section-title {
-    @include type-style-queens;
+    @include typography.type-style-queens;
 
-    color: map-get($colors, barrow);
+    color: map.get(colors.$colors, barrow);
     margin: 0;
     padding: 15px;
     position: relative;
@@ -59,9 +63,9 @@
     $size: 35px;
 
     align-items: center;
-    background-color: map-get($colors, bayard);
+    background-color: map.get(colors.$colors, bayard);
     border-radius: $size;
-    color: rgba(map-get($colors, barrow), 0.2);
+    color: rgba(map.get(colors.$colors, barrow), 0.2);
     display: flex;
     font-family: sans-serif;
     height: $size;
@@ -112,9 +116,9 @@
   }
 
   &__message-title {
-    @include type-style-brooklyn;
+    @include typography.type-style-brooklyn;
 
-    color: map-get($colors, beach);
+    color: map.get(colors.$colors, beach);
     display: flex;
     padding: 5px 15px;
 
@@ -193,7 +197,7 @@
 
     #{$this}__badge {
       background-color: #212121;
-      color: darken(map-get($colors, bayard), 5%);
+      color: color.adjust(map.get(colors.$colors, bayard), $lightness: -5%);
     }
 
     #{$this}__section-title {
@@ -205,4 +209,18 @@
     margin-top: 10px;
     padding: 15px;
   }
+}
+
+.app__count {
+  font-variant-numeric: tabular-nums;
+  margin-left: 8px;
+}
+
+.app__error {
+  background: #5c1f1f;
+  border-radius: 4px;
+  color: #ffd7d7;
+  margin: 0 auto 20px;
+  max-width: 1200px;
+  padding: 10px 14px;
 }

@@ -1,40 +1,39 @@
 # api-poller-worker
 
-[![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
+[![CI](https://github.com/brianmcallister/api-poller-worker/actions/workflows/ci.yml/badge.svg)](https://github.com/brianmcallister/api-poller-worker/actions/workflows/ci.yml) [![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
 
-> Efficient polling with WebWorkers. Make existing APIs feel real time
+> Efficient polling with web workers. Make existing APIs feel real time
 
-`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with web workers.
+`api-poller-worker` turns regular 'ol RESTful JSON APIs into realtime streaming connections (not really), using polling with web workers. A worker polls the API and compares each response with the last, so your page only hears about what's new, updated or removed.
 
 ## Table of contents
 
 - [Demo](#demo)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Inline worker](#inline-worker)
+  - [Your own worker](#your-own-worker)
+  - [What the API needs to return](#what-the-api-needs-to-return)
 - [API](#api)
-  - Classes
-    - [`ApiPollerWorker`](#apipollerworker)
-      - [`#start`](#apipollerworkerstart)
-      - [`#stop`](#apipollerworkerstop)
-      - [`#onMessage`](#apipollerworkeronmessage)
-    - [`WorkerCore`](#workercore)
-  - Utils
-    - [`createEmptyMsg`](#createemptymsg)
-  - Types
-    - [`Records<T>`](#recordst)
-    - [`Msg<T>`](#msgt)
-    - [`ApiPollerWorkerOptions`](#apipollerworkeroptions)
+  - [`ApiPollerWorker`](#apipollerworker)
+  - [`WorkerCore`](#workercore)
+  - [`createEmptyMsg`](#createemptymsg)
+  - [Types](#types)
+- [Upgrading from 1.x](#upgrading-from-1x)
 
 ## Demo
 
 Hosted demo: [https://brianmcallister.github.io/api-poller-worker/](https://brianmcallister.github.io/api-poller-worker/)
 
-You can also run the demo locally. To get started:
+The demo uses the package built from this repository, so build it before running the demo locally:
 
 ```sh
 git clone git@github.com:brianmcallister/api-poller-worker.git
-cd api-poller-worker/demo
-npm i
+cd api-poller-worker
+npm install
+npm run build
+cd demo
+npm install
 npm start
 ```
 
@@ -50,224 +49,150 @@ npm install api-poller-worker
 
 ## Usage
 
-### How to get started
+There are two ways to use this library. The inline worker is the easiest. Your own worker lets you do more with the data inside the worker, such as making other requests or expensive calculations, before it reaches your page.
 
-There are two ways to use this library:
+### Inline worker
 
-1. Set `inline` to `true` when creating an `ApiPollerWorker`. Doing this will create an [inline worker](https://www.html5rocks.com/en/tutorials/workers/basics/#toc-inlineworkers). Although this is much easier than option 2, if you need fine grained control over what's going on inside the worker (such as making other XHR requests, doing expensive calculations based on the data returned by the API that you're polling, etc.), you'll want to try...
-2. Provide a URL to a worker file. Within that worker file, you need to create an instance of `WorkerCore`. If you do this, you now have the ability to manipulate the data from the API endpoint before you pass it back to your application. You also have the ability to pass more fine grained options to the `WorkerCore` class.
-
-#### Option 1: Inline worker
-
-Here's an example of how to create an inline worker:
+The package includes a worker, so there's nothing else to set up:
 
 ```ts
-const worker = ApiPollerWorker({ inline: true, apiUrl: '<my api url>' });
+import { ApiPollerWorker } from 'api-poller-worker';
 
-worker.onMessage(data => console.log(data));
+const poller = new ApiPollerWorker<Product>({
+  inline: true,
+  apiUrl: 'https://example.com/api/products',
+  interval: 5000,
+});
+
+poller.onMessage((msg) => {
+  console.log('new', msg.newItems, 'updated', msg.updatedItems, 'removed', msg.removedItems);
+});
+
+poller.onError((error) => {
+  console.error('Polling failed', error);
+});
 ```
 
-#### Option 2: Create your own Worker.
+### Your own worker
 
-There are two distinct steps to getting this working:
+Create a `WorkerCore` in your worker script:
 
-1. Create an [`ApiPollerWorker`](#apipollerworker) instance in your application, and subscribe to updates.
-2. Create a web worker, and create a [`WorkerCore`](#workercore) instance inside of it.
+> `poller.worker.ts`
 
-What this library does _not_ help with is creating the worker files themselves. You'll have to set this up in your application's build pipeline, but there are many resources available online to guide you. You can also check out the demo application source to see how I like to set it up.
+```ts
+import { WorkerCore } from 'api-poller-worker';
 
-- [Worker documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
-- [`worker-loader`, a webpack plugin](https://github.com/webpack-contrib/worker-loader)
-- [Demo application source](https://github.com/brianmcallister/api-poller-worker/tree/main/demo)
+new WorkerCore<Product>({ url: 'https://example.com/api/products' });
+```
 
-In short, you need to tell your [`ApiPollerWorker`](#apipollerworker) where your worker is, and then in your worker, you need to tell [`WorkerCore`](#workercore) where the API endpoint you'd like to poll is.
+Then pass the worker to `ApiPollerWorker`. With a bundler such as Vite or webpack 5, create it with `new Worker(new URL(...))` so the bundler builds the worker for you:
 
-The reason for structuring the code this way is so that you can do other operations on the data from your polled API endpoint _in your worker_, before passing the data back to your application.
+```ts
+import { ApiPollerWorker } from 'api-poller-worker';
 
-### Assumptions
+const poller = new ApiPollerWorker<Product>({
+  worker: new Worker(new URL('./poller.worker.ts', import.meta.url), { type: 'module' }),
+});
+```
 
-Internally, there are some assumptions being made about the API that is being polled. Specifically that the API endpoint responds with JSON, as a list of objects with a unique identifier.
+If your worker is already built, pass its URL with `workerUrl` instead.
 
-Which key is used as the unique identifier is configurable (see [`WorkerCore`](#workercore)), but there does need to be one. As long as your endpoint responds with something like this, everything should work just fine:
+### What the API needs to return
+
+The API endpoint has to respond with a JSON array of objects, each with a unique ID. The ID property defaults to `id`, and you can change it with `uniqueKey`.
 
 ```json
 [
-  {
-    "id": 1,
-    "some": "value"
-  },
-  {
-    "id": 2,
-    "some": "other value"
-  }
+  { "id": 1, "some": "value" },
+  { "id": 2, "some": "other value" }
 ]
 ```
+
+A response that isn't successful, or isn't an array, is reported to `onError` instead of `onMessage`.
 
 ###### [⇡ Top](#table-of-contents)
 
 ## API
 
-### Classes
-
-#### `ApiPollerWorker`
+### `ApiPollerWorker`
 
 ```ts
 import { ApiPollerWorker } from 'api-poller-worker';
+
+new ApiPollerWorker<T>(options: ApiPollerWorkerOptions);
 ```
 
-The `ApiPollerWorker` class is what coordinates the communcation between
-your app and your worker. The constructor accepts the following:
+Runs a worker that polls an API, and tells you what changed in each response. `T` is the type of the objects the API returns. See [`ApiPollerWorkerOptions`](#apipollerworkeroptions).
 
-```ts
-interface ApiPollerWorkerOptions {
-  // URL of the API endpoint to poll. This is only required
-  // if inline is true.
-  apiUrl?: string;
-  // Tell the worker to start polling immediately.
-  // Defaults to true.
-  autoStart?: boolean;
-  // Create an inline worker.
-  // Defaults to false.
-  inline?: boolean;
-  // URL of the Worker to be created.
-  // This option is required if inline is false.
-  workerUrl?: string;
-}
-```
+- `start(): this` starts polling. Polling starts right away unless `autoStart` is `false`.
+- `stop(): this` stops polling. Call `start` to poll again.
+- `onMessage(callback: (msg: Msg<T>) => void): this` calls `callback` with what changed after each response. See [`Msg<T>`](#msgt).
+- `onError(callback: (error: Error) => void): this` calls `callback` when a request fails, the response isn't an array, or an object has no unique ID.
+- `terminate(): void` stops polling and shuts the worker down for good.
 
-##### `ApiPollerWorker#start`
-
-Send a message (via `postMessage`) to the worker, telling it to start polling.
-
-```ts
-start(): this;
-```
-
-```ts
-const pollerWorker = new ApiPollerWorker<Resource>({
-  workerUrl: '/my-worker-file.js',
-});
-
-pollerWorker.start();
-```
-
-##### `ApiPollerWorker#stop`
-
-Send a message (via `postMessage`) to the worker, telling it to stop polling.
-
-```ts
-stop(): this;
-```
-
-```ts
-const pollerWorker = new ApiPollerWorker<Resource>({
-  workerUrl: '/my-worker-file.js',
-});
-
-pollerWorker.stop();
-```
-
-##### `ApiPollerWorker#onMessage`
-
-Subscribe to updates from the `ApiPollerWorker` instance. The response is a [`Msg<T>`](#msgt), which is structured so that your application will know exactly which resources in your polled endpoint are new, updated, or removed.
-
-```ts
-onMessage(callback: (data: Msg<T>) => void): this;
-```
-
-```ts
-const pollerWorker = new ApiPollerWorker<Resource>({
-  workerUrl: '/my-worker-file.js',
-});
-
-pollerWorker.onMessage(data => {
-  // `data` will be of type Msg<Resource>
-  console.log('got data', data);
-});
-```
-
-###### [⇡ Top](#table-of-contents)
-
-#### `WorkerCore`
-
-```ts
-import { WorkerCore } from 'api-poller-worker';
-```
-
-The `WorkerCore` class is the what you need to create an instance of in your Worker. The constructor accepts the following options:
-
-```ts
-interface WorkerCoreOptions {
-  // Options to pass to `fetch`.
-  fetchOptions?: RequestInit;
-  // URL to poll.
-  url: string;
-  // Unique key for the resources returned by the API.
-  // Defaults to 'id'.
-  uniqueKey?: string;
-  // How often the API endpoint should be polled,
-  // in milliseconds.
-  // Defaults to 2000.
-  interval?: number;
-}
-```
-
-Here's an example of the simplest possible Worker file (with type safety).
-
-> `worker.ts`
+### `WorkerCore`
 
 ```ts
 import { WorkerCore } from 'api-poller-worker';
 
-import { Resource } from '../src/types';
-
-new WorkerCore<Resource>({ url: '<some endpoint>' });
+new WorkerCore<T>(options: WorkerCoreOptions);
 ```
 
-###### [⇡ Top](#table-of-contents)
+Polls the API from inside your own worker. Create one in your worker script, and control it from the page with `ApiPollerWorker`. See [`WorkerCoreOptions`](#workercoreoptions).
 
-### Utils
-
-#### `createEmptyMsg`
-
-Create the [`Msg<T>`](#msgt) structure, but empty. Useful for building default state for a slice of Redux state.
+### `createEmptyMsg`
 
 ```ts
 import { createEmptyMsg } from 'api-poller-worker';
+
+createEmptyMsg<T>(): Msg<T>;
 ```
 
-```ts
-createEmptyMsg<T>(): Msg<T>
-```
-
-###### [⇡ Top](#table-of-contents)
+Creates a [`Msg<T>`](#msgt) with nothing in it. Useful as initial state.
 
 ### Types
 
-#### `Records<T>`
-
-Keep track of a normalized set of records.
+#### `ApiPollerWorkerOptions`
 
 ```ts
-import { Records } from 'api-poller-worker';
-```
-
-```ts
-interface Records<T> {
-  ids: string[];
-  byId: { [id: string]: T };
+interface ApiPollerWorkerOptions {
+  // Use the worker built into this package to poll `apiUrl`.
+  inline?: boolean;
+  // The API endpoint to poll, when `inline` is set.
+  apiUrl?: string;
+  // Options passed to `fetch`, when `inline` is set. Use a plain `headers` object.
+  fetchOptions?: RequestInit;
+  // How often to poll, in milliseconds, when `inline` is set. Defaults to 2000.
+  interval?: number;
+  // The property that uniquely identifies each object, when `inline` is set. Defaults to 'id'.
+  uniqueKey?: string;
+  // Your own worker, which creates a `WorkerCore`.
+  worker?: Worker;
+  // The URL of your own worker script, which creates a `WorkerCore`.
+  workerUrl?: string | URL;
+  // Start polling right away. Defaults to true.
+  autoStart?: boolean;
 }
 ```
 
-###### [⇡ Top](#table-of-contents)
+#### `WorkerCoreOptions`
+
+```ts
+interface WorkerCoreOptions {
+  // The API endpoint to poll.
+  url: string;
+  // Options passed to `fetch`.
+  fetchOptions?: RequestInit;
+  // How often to poll, in milliseconds. Defaults to 2000.
+  interval?: number;
+  // The property that uniquely identifies each object. Defaults to 'id'.
+  uniqueKey?: string;
+}
+```
 
 #### `Msg<T>`
 
-Represents the contents of the message emitted by the [`WorkerCore`](#workercore).
-
-```ts
-import { Msg } from 'api-poller-worker';
-```
+What changed between two responses.
 
 ```ts
 interface Msg<T> {
@@ -277,23 +202,26 @@ interface Msg<T> {
 }
 ```
 
-###### [⇡ Top](#table-of-contents)
+#### `Records<T>`
 
-#### `ApiPollerWorkerOptions`
-
-Options object accepted by [`ApiPollerWorker`](#apipollerworker).
+Objects keyed by their unique ID. IDs are always strings, even when the API uses numbers.
 
 ```ts
-import { ApiPollerWorkerOptions } from 'api-poller-worker';
-```
-
-```ts
-interface ApiPollerWorkerOptions {
-  apiUrl?: string;
-  autoStart?: boolean;
-  inline?: boolean;
-  workerUrl?: string;
+interface Records<T> {
+  ids: string[];
+  byId: Record<string, T>;
 }
 ```
+
+###### [⇡ Top](#table-of-contents)
+
+## Upgrading from 1.x
+
+- Inline mode works. In 1.x the published package didn't include the inline worker it needed, so `inline: true` threw.
+- The worker now sends `{ type: 'update', msg }` and `{ type: 'error', message }` messages, which `ApiPollerWorker` unpacks for you. If you use your own worker, make sure the page and the worker use the same version of this package.
+- IDs in `Msg` and `Records` are always strings.
+- The package has an `exports` map, so deep imports from `dist/` no longer work.
+
+See the [changelog](CHANGELOG.md) for everything else.
 
 ###### [⇡ Top](#table-of-contents)

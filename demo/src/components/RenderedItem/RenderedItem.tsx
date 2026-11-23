@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import React from 'react';
 
 import './_rendered-item.scss';
@@ -80,10 +79,13 @@ export default class RenderedItem extends React.PureComponent<Props, State> {
   render = () => {
     const { id, name, price } = this.props;
     const { flash, newItem } = this.state;
-    const cls = classnames(RenderedItem.baseClass, {
-      [`${RenderedItem.baseClass}--flash`]: flash,
-      [`${RenderedItem.baseClass}--new`]: newItem,
-    });
+    const cls = [
+      RenderedItem.baseClass,
+      flash && `${RenderedItem.baseClass}--flash`,
+      newItem && `${RenderedItem.baseClass}--new`,
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
       <div className={cls}>

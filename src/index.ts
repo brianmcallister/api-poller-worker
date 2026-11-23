@@ -1,4 +1,11 @@
-export { default as ApiPollerWorker } from './ApiPollerWorker';
-export { default as WorkerCore } from './WorkerCore';
-export { ApiPollerWorkerOptions, Msg } from './types';
-export { default as createEmptyMsg } from './utils/createEmptyMsg';
+export { ApiPollerWorker } from './ApiPollerWorker';
+export { WorkerCore, type WorkerScope } from './WorkerCore';
+export { createEmptyMsg } from './records';
+export type {
+  ApiPollerWorkerOptions,
+  ControlMessage,
+  Msg,
+  Records,
+  WorkerCoreOptions,
+  WorkerMessage,
+} from './types';

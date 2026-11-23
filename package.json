@@ -1,65 +1,72 @@
 {
   "name": "api-poller-worker",
-  "version": "1.3.4",
-  "description": "Efficient polling with WebWorkers. Make existing APIs feel real time",
-  "main": "dist/index.js",
-  "repository": "brianmcallister/api-poller-worker",
+  "version": "2.0.0",
+  "description": "Efficient polling with web workers. Make existing APIs feel real time",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brianmcallister/api-poller-worker.git"
+  },
   "homepage": "https://brianmcallister.github.io/api-poller-worker/",
+  "bugs": "https://github.com/brianmcallister/api-poller-worker/issues",
   "license": "MIT",
   "author": {
     "name": "Brian Wm. McAllister",
     "email": "brian@brianmcallister.com",
     "url": "https://www.brianmcallister.com"
   },
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "keywords": [
     "api",
     "polling",
     "real-time",
     "webworker",
-    "javascript"
+    "web-worker",
+    "javascript",
+    "typescript"
   ],
   "scripts": {
-    "build:worker": "rollup -c",
-    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ./src ./demo",
-    "prepare": "rimraf dist && tsc",
-    "stylelint": "stylelint demo/**/*.scss",
-    "test": "jest --coverage",
-    "types": "tsc --noEmit"
+    "build": "tsup",
+    "format": "prettier --write .",
+    "lint": "eslint . && prettier --check .",
+    "lint:package": "publint",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@babel/cli": "7.7.0",
-    "@babel/core": "7.7.2",
-    "@babel/preset-env": "7.7.1",
-    "@babel/preset-typescript": "7.7.2",
-    "@types/jest": "24.0.23",
-    "@typescript-eslint/eslint-plugin": "2.7.0",
-    "eslint": "6.6.0",
-    "eslint-config-airbnb": "18.0.1",
-    "eslint-config-airbnb-typescript": "6.1.0",
-    "eslint-config-prettier": "6.5.0",
-    "eslint-plugin-eslint-comments": "3.1.2",
-    "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-jest": "23.0.3",
-    "eslint-plugin-jsx-a11y": "6.2.3",
-    "eslint-plugin-prettier": "3.1.1",
-    "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-react": "7.16.0",
-    "eslint-plugin-react-hooks": "2.2.0",
-    "eslint-plugin-unicorn": "12.1.0",
-    "jest": "^25.2.7",
-    "prettier": "1.19.1",
-    "rimraf": "3.0.0",
-    "rollup": "1.27.2",
-    "rollup-plugin-babel": "4.3.3",
-    "rollup-plugin-typescript": "1.0.1",
-    "stylelint": "11.1.1",
-    "stylelint-config-recommended": "3.0.0",
-    "stylelint-config-sass-guidelines": "6.1.0",
-    "stylelint-scss": "3.12.1",
-    "ts-jest": "^25.3.1",
-    "typescript": "3.7.2"
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "5.1.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.14.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "publint": "0.3.15",
+    "tsup": "9.0.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
   }
 }

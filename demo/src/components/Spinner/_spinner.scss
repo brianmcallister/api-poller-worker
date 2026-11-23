@@ -1,12 +1,14 @@
-@import '../../styles/base';
+@use "sass:map";
+@use '../../styles/base';
+@use "../../styles/variables/colors";
 
 .spinner {
   $size: 25px;
-  $color: map-get($colors, bayard);
-  $border: 2px solid rgba(map-get($colors, astor), 0.8);
+  $color: map.get(colors.$colors, bayard);
+  $border: 2px solid rgba(map.get(colors.$colors, astor), 0.8);
   $duration: 5s;
 
-  background-color: map-get($colors, bayard);
+  background-color: map.get(colors.$colors, bayard);
   height: $size;
   position: relative;
   width: $size;

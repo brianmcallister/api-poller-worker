@@ -1,108 +1,120 @@
-import { ApiPollerWorker, Msg, createEmptyMsg } from '@brianmcallister/api-poller-worker';
-import classnames from 'classnames';
-import FlipMove from 'react-flip-move';
-import FlipNumbers from 'react-flip-numbers';
-import Highlight from 'react-highlight.js';
-import React from 'react';
+import { ApiPollerWorker, createEmptyMsg, type Msg } from 'api-poller-worker';
+import hljs from 'highlight.js/lib/core';
+import json from 'highlight.js/lib/languages/json';
+import { useEffect, useReducer, useState } from 'react';
 
-import { Resource } from '../../types';
+import type { Resource } from '../../types';
 import LogoIcon from '../LogoIcon';
 import RenderedItem from '../RenderedItem';
 import Spinner from '../Spinner';
 
 import './_app.scss';
 
+hljs.registerLanguage('json', json);
+
+/** The demo API, a Vercel function from brianmcallister/api-poller-worker-demo-server. */
+const API_URL =
+  (import.meta.env.VITE_POLLING_API_URL as string | undefined) ??
+  'https://api-poller-worker-demo-server.vercel.app/';
+
 interface State {
   ids: string[];
-  byId: { [id: string]: Resource };
+  byId: Record<string, Resource>;
 }
 
-interface Action {
-  type: 'update';
-  payload: Msg<Resource>;
-}
-
-/**
- * Base CSS class.
- * @private
- */
 const baseClass = 'app';
 
 /**
- * Create an initial state for the useRedcuer hook.
- * @private
+ * Pad `list` with nulls up to `min` items, so each section keeps its height.
  */
-const createInitialState = () => ({ ids: [], byId: {} });
+const padded = <T,>(list: T[], min = 3): (T | null)[] =>
+  list.length >= min ? list : [...list, ...Array<null>(min - list.length).fill(null)];
 
 /**
- * Initial state for the useReducer hook.
- * @private
+ * Apply a message from the worker to the current state.
  */
-const initialState = createInitialState();
+const reducer = (state: State, msg: Msg<Resource>): State => {
+  const removed = new Set(msg.removedItems);
+  const byId = { ...state.byId, ...msg.newItems.byId, ...msg.updatedItems.byId };
 
-/**
- * Create a 'padded' array of a minimum length.
- * @private
- */
-function paddedArray<T>(arr: T[], min = 3) {
-  if (arr.length >= min) {
-    return arr;
+  for (const id of removed) {
+    delete byId[id];
   }
 
-  return [...arr, ...new Array(min - arr.length)];
-}
-
-/**
- * Reducer for the useReducer hook.
- * @private
- */
-const reducer = (state: State, action: Action) => {
-  const { type, payload } = action;
-
-  switch (type) {
-    case 'update': {
-      const { newItems, updatedItems, removedItems } = payload;
-      const newState = { ...state };
-
-      // First, append the new items.
-      newState.ids = newState.ids.concat(newItems.ids);
-      newState.byId = { ...newState.byId, ...newItems.byId };
-
-      // Next, remove the removed items.
-      newState.ids = newState.ids.filter(id => !removedItems.includes(id));
-      removedItems.forEach(id => delete newState.byId[id]);
-
-      // Finally, update the updated items.
-      Object.values(updatedItems.byId).forEach(item => {
-        newState.byId[item.id] = item;
-      });
-
-      return newState;
-    }
-
-    default:
-      return state;
-  }
+  return {
+    ids: state.ids.concat(msg.newItems.ids).filter((id) => !removed.has(id)),
+    byId,
+  };
 };
+
+/**
+ * One list of new, updated or removed items in the latest message.
+ */
+const MessageSection = ({
+  ids,
+  items,
+  title,
+  type,
+}: {
+  ids: string[];
+  items?: Record<string, Resource>;
+  title: string;
+  type: 'new' | 'updated' | 'removed';
+}) => (
+  <div className={`${baseClass}__message-type ${baseClass}__message-type--${type}`}>
+    <div className={`${baseClass}__message-title`}>
+      {title}
+      <span className={`${baseClass}__count`}>{ids.length}</span>
+    </div>
+
+    <div className={`${baseClass}__message-items`}>
+      {padded(ids).map((id, index) => {
+        const item = id === null ? undefined : items?.[id];
+
+        return (
+          <div
+            key={id ?? `empty-${String(index)}`}
+            className={`${baseClass}__message-item${id === null ? ` ${baseClass}__message-item--empty` : ''}`}
+          >
+            {id === null && <span className={`${baseClass}__message-field`}>∅</span>}
+            {id !== null && !item && <span className={`${baseClass}__message-field`}>{id}</span>}
+            {item && (
+              <>
+                <span className={`${baseClass}__message-field`}>{item.id}</span>
+                <span className={`${baseClass}__message-field`}>{item.name}</span>
+                <span className={`${baseClass}__message-field`}>{item.price}</span>
+              </>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
 
 /**
  * App component.
  */
-export default () => {
-  let pollerWorker;
+const App = () => {
+  const [state, dispatch] = useReducer(reducer, { ids: [], byId: {} });
+  const [message, setMessage] = useState<Msg<Resource>>(createEmptyMsg);
+  const [error, setError] = useState<string | null>(null);
 
-  const [state, dispatch] = React.useReducer(reducer, initialState, createInitialState);
-  const [items, setItems] = React.useState<Msg<Resource>>(createEmptyMsg());
+  useEffect(() => {
+    // The inline worker is built into the package, so there's no worker file to set up.
+    const poller = new ApiPollerWorker<Resource>({ inline: true, apiUrl: API_URL, interval: 2000 })
+      .onMessage((msg) => {
+        setMessage(msg);
+        setError(null);
+        dispatch(msg);
+      })
+      .onError((reason) => {
+        setError(reason.message);
+      });
 
-  React.useEffect(() => {
-    pollerWorker = new ApiPollerWorker<Resource>({
-      workerUrl: 'workers/main.worker.bundle.js',
-    });
-
-    pollerWorker.onMessage(data => {
-      setItems(data);
-      dispatch({ type: 'update', payload: data });
-    });
+    return () => {
+      poller.terminate();
+    };
   }, []);
 
   return (
@@ -116,9 +128,15 @@ export default () => {
 
         <div className={`${baseClass}__header-links`}>
           <a href="https://github.com/brianmcallister/api-poller-worker">GitHub</a>
-          <a href="https://npmjs.com/package/@brianmcallister/api-poller-worker">npm</a>
+          <a href="https://npmjs.com/package/api-poller-worker">npm</a>
         </div>
       </header>
+
+      {error && (
+        <p className={`${baseClass}__error`} role="alert">
+          Polling failed: {error}
+        </p>
+      )}
 
       <div className={`${baseClass}__content`}>
         <div className={`${baseClass}__message`}>
@@ -127,117 +145,19 @@ export default () => {
             Worker messages
           </p>
 
-          <div className={`${baseClass}__message-type ${baseClass}__message-type--new`}>
-            <div className={`${baseClass}__message-title`}>
-              New
-              <FlipNumbers
-                height={20}
-                width={20}
-                play
-                duration={0.5}
-                numbers={`${items.newItems.ids.length}`}
-              />
-            </div>
-
-            <div className={`${baseClass}__message-items`}>
-              {paddedArray(items.newItems.ids).map(id => (
-                <div
-                  key={id || Math.random()}
-                  className={classnames(`${baseClass}__message-item`, {
-                    [`${baseClass}__message-item--empty`]: !id,
-                  })}
-                >
-                  {id && (
-                    <>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.newItems.byId[id].id}
-                      </span>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.newItems.byId[id].name}
-                      </span>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.newItems.byId[id].price}
-                      </span>
-                    </>
-                  )}
-
-                  {!id && <span className={`${baseClass}__message-field`}>∅</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={`${baseClass}__message-type ${baseClass}__message-type--updated`}>
-            <header className={`${baseClass}__message-title`}>
-              Updated
-              <FlipNumbers
-                height={20}
-                width={20}
-                play
-                duration={0.5}
-                numbers={`${items.updatedItems.ids.length}`}
-              />
-            </header>
-
-            <div className={`${baseClass}__message-items`}>
-              {paddedArray(items.updatedItems.ids).map(id => (
-                <div
-                  key={id || Math.random()}
-                  className={classnames(`${baseClass}__message-item`, {
-                    [`${baseClass}__message-item--empty`]: !id,
-                  })}
-                >
-                  {id && (
-                    <>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.updatedItems.byId[id].id}
-                      </span>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.updatedItems.byId[id].name}
-                      </span>
-                      <span className={`${baseClass}__message-field`}>
-                        {items.updatedItems.byId[id].price}
-                      </span>
-                    </>
-                  )}
-
-                  {!id && <span className={`${baseClass}__message-field`}>∅</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={`${baseClass}__message-type ${baseClass}__message-type--removed`}>
-            <header className={`${baseClass}__message-title`}>
-              Removed
-              <FlipNumbers
-                height={20}
-                width={20}
-                play
-                duration={0.5}
-                numbers={`${items.removedItems.length}`}
-              />
-            </header>
-
-            <div className={`${baseClass}__message-items`}>
-              {paddedArray(items.removedItems).map(id => (
-                <div
-                  key={id || Math.random()}
-                  className={classnames(`${baseClass}__message-item`, {
-                    [`${baseClass}__message-item--empty`]: !id,
-                  })}
-                >
-                  {id && <span className={`${baseClass}__message-field`}>{id}</span>}
-
-                  {!id && (
-                    <span className={`${baseClass}__message-field`}>
-                      <strong>∅</strong>
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <MessageSection
+            ids={message.newItems.ids}
+            items={message.newItems.byId}
+            title="New"
+            type="new"
+          />
+          <MessageSection
+            ids={message.updatedItems.ids}
+            items={message.updatedItems.byId}
+            title="Updated"
+            type="updated"
+          />
+          <MessageSection ids={message.removedItems} title="Removed" type="removed" />
         </div>
 
         <div className={`${baseClass}__state`}>
@@ -246,7 +166,14 @@ export default () => {
             Current state
           </p>
 
-          <Highlight language="json">{JSON.stringify(state, null, 4)}</Highlight>
+          <pre className="hljs">
+            <code
+              dangerouslySetInnerHTML={{
+                __html: hljs.highlight(JSON.stringify(state, null, 4), { language: 'json' })
+                  .value,
+              }}
+            />
+          </pre>
         </div>
 
         <div className={`${baseClass}__rendered`}>
@@ -255,18 +182,19 @@ export default () => {
             Items
           </p>
 
-          <FlipMove className={`${baseClass}__rendered-items`} staggerDurationBy={50}>
-            {state.ids.map(id => (
-              <RenderedItem
-                key={state.byId[id].id}
-                id={state.byId[id].id}
-                name={state.byId[id].name}
-                price={state.byId[id].price}
-              />
-            ))}
-          </FlipMove>
+          <div className={`${baseClass}__rendered-items`}>
+            {state.ids.map((id) => {
+              const item = state.byId[id];
+
+              return item ? (
+                <RenderedItem key={id} id={item.id} name={item.name} price={item.price} />
+              ) : null;
+            })}
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default App;
