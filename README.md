@@ -1,4 +1,9 @@
-# api-poller-worker
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/brianmcallister/api-poller-worker/main/.github/assets/logo-dark.svg">
+    <img alt="api-poller-worker" src="https://raw.githubusercontent.com/brianmcallister/api-poller-worker/main/.github/assets/logo-light.svg" height="48">
+  </picture>
+</h1>
 
 [![CI](https://github.com/brianmcallister/api-poller-worker/actions/workflows/ci.yml/badge.svg)](https://github.com/brianmcallister/api-poller-worker/actions/workflows/ci.yml) [![npm version](https://img.shields.io/npm/v/api-poller-worker?label=version&color=%2354C536&logo=npm)](https://www.npmjs.com/package/api-poller-worker)
 
